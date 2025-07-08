@@ -69,7 +69,7 @@ docker run -d --name wp --network wpnet -p 8080:80 \
   wordpress
 ```
 
-## Initialize WP-Node Project
+### Initialize WP-Node Project
 
 WP-Node requires an initialized configuration before use. You can scaffold a new project using the CLI.
 
@@ -116,7 +116,7 @@ After initialization, your project will look like this:
 - `index.ts`: The main entry point for your WP-Node app. A basic sample is provided.
 - `.env`: Stores sensitive environment variables, including your database credentials and other configuration values required at runtime.
 
-## Run the App
+### Run the App
 
 Once the config is initialized, run the app using:
 
@@ -139,7 +139,7 @@ select * from `wp_posts` as `posts_5` where `posts_5`.`ID` = 1
 ]
 ```
 
-## Use Cli
+## CLI
 
 WP-Node CLI provides a convenient way to interact with WordPress data without writing any code.
 
@@ -157,7 +157,7 @@ npx @rnaga/wp-node-cli -- post get 1 -Z table -F ID,post_title,post_type
 └────────────┴────────────────┘
 ```
 
-## Develop your CLI using decorators:
+### Develop your CLI using decorators:
 
 **Example**:
 
