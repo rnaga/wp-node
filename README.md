@@ -1,5 +1,9 @@
 # WP-Node
 
+## 📘 Documentation
+
+👉 **[View Full Documentation at rnaga.github.io/wp-node →](https://rnaga.github.io/wp-node/)**
+
 ## What is WP-Node?
 
 WP-Node is a Node.js project written in TypeScript that mirrors the WordPress database schema and functionality. It enables developers to build scalable, modern backends on top of existing WordPress data.
