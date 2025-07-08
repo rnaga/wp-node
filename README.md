@@ -69,43 +69,97 @@ docker run -d --name wp --network wpnet -p 8080:80 \
   wordpress
 ```
 
-## Configuration
+## Initialize WP-Node Project
 
-Create your config:
-
-```sh
-npx @rnaga/wp-node-cli -- config
-```
-
-It will prompt for database settings and generate:
-
-```
-_wp/
-  └── config/wp.json
-.env
-```
-
-You can configure additional settings such as:
-
-- `staticAssetsPath`: Path for media references
-- `multisite.enabled`: Enable or disable multisite support
-- Custom post types, taxonomies, statuses
-
-## CLI Usage
-
-Install CLI tools:
+WP-Node requires an initialized configuration before use. You can scaffold a new project using the CLI.
 
 ```sh
-npm i -S @rnaga/wp-node-cli -- -h
+mkdir /tmp/test-wp-node
+cd /tmp/test-wp-node
+npx @rnaga/wp-node-cli -- init
 ```
 
-Basic command to list posts:
+Then enter prompts as follows:
 
 ```sh
-npx @rnaga/wp-node-cli -- post list
+✔ Enter your database hostname: · localhost
+✔ Enter your database port: · 33306
+✔ Enter your database username: · wp
+✔ Enter your database password: · **
+✔ Enter your database name: · wordpress
+✔ Is it a multi-site? · No
+✔ Enter your static assets path: · public
 ```
 
-Develop your own commands using decorators:
+### Project Structure
+
+After initialization, your project will look like this:
+
+```
+./
+├── _wp
+│   ├── config
+│   │   ├── index.d.ts
+│   │   └── wp.json
+│   └── settings.ts
+├── .env
+├── index.ts
+├── package-lock.json
+├── package.json
+└── tsconfig.json
+```
+
+**Key files**
+
+- `_wp/config/wp.json`: Holds configuration for WP-Node such as public path and multisite info. This file is imported by settings.ts.
+- `_wp/settings.ts`: Initializes the WP-Node Context, including config, database access and hooks.
+- `index.ts`: The main entry point for your WP-Node app. A basic sample is provided.
+- `.env`: Stores sensitive environment variables, including your database credentials and other configuration values required at runtime.
+
+## Run the App
+
+Once the config is initialized, run the app using:
+
+```sh
+mvn use 22
+npx ts-node ./index.ts
+```
+
+If everything is working correctly, you’ll see SQL output like:
+
+```sh
+select * from `wp_posts` as `posts_5` where `posts_5`.`ID` = 1
+[
+  {
+    ID: 1,
+    post_author: 1,
+    post_title: 'Hello world!',
+    ...
+  }
+]
+```
+
+## Use Cli
+
+WP-Node CLI provides a convenient way to interact with WordPress data without writing any code.
+
+To query a post (e.g. ID = 1), run:
+
+```sh
+npx @rnaga/wp-node-cli -- post get 1 -Z table -F ID,post_title,post_type
+
+┌────────────┬────────────────┐
+│ (index)    │ Values         │
+├────────────┼────────────────┤
+│ ID         │ 1              │
+│ post_title │ 'Hello world!' │
+│ post_type  │ 'post'         │
+└────────────┴────────────────┘
+```
+
+## Develop your CLI using decorators:
+
+**Example**:
 
 ```ts
 @command("page", { description: "Page commands" })
