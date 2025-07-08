@@ -1,13 +1,14 @@
 {
   "name": "@rnaga/wp-node",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "",
   "scripts": {
     "build": "rm -rf ./dist && tsc --project tsconfig.build.json && npm run copyfiles && cp package.json ./dist/",
     "clean": "tsc --build --clean",
     "copyfiles": "copyfiles -u 1 \"src/**/*.d.ts\" dist",
     "release-old": "npm --no-git-tag-version version patch && cp ../../.npmrc ./dist/ && cp package.json ./dist/ && cd ./dist/ && npm publish",
-    "release": "../../scripts/release.sh"
+    "release": "../../scripts/release.sh",
+    "test-copy": "../../scripts/test.sh"
   },
   "keywords": [
     "wordpress",

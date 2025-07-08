@@ -73,7 +73,7 @@ npm version $VERSION_TYPE --no-git-tag-version
 cp package.json ./dist/
 
 # Copy README.md to dist
-cp ../README.md ./dist/
+cp ../../README.md ./dist/
 
 # Move to dist directory
 # This is where the package will be published from
