@@ -69,6 +69,8 @@ docker run -d --name wp --network wpnet -p 8080:80 \
   wordpress
 ```
 
+Visit http://localhost:8080 in your browser to complete the WordPress setup.
+
 ### Initialize WP-Node Project
 
 WP-Node requires an initialized configuration before use. You can scaffold a new project using the CLI.
@@ -155,6 +157,35 @@ npx @rnaga/wp-node-cli -- post get 1 -Z table -F ID,post_title,post_type
 │ post_title │ 'Hello world!' │
 │ post_type  │ 'post'         │
 └────────────┴────────────────┘
+```
+
+### Listing Available Commands
+
+To view all available CLI commands, run:
+
+```
+npx @rnaga/wp-node-cli -- -h
+```
+
+output:
+
+```sh
+Usage: <command> <subcommand> [options]
+
+Commands:
+   blog             Blog commands
+   comment          Comment commands
+   config           Generate WP config files
+   init             Initialize WP with Node. (Generate wp.json and install dependencies)
+   install          Initialize a new blog and create a user
+   meta             Meta commands (post, comment, blog, term, user, site)
+   option           Options commands
+   post             Post commands
+   repl             Start a REPL
+   role             Role commands
+   site             Site commands
+   term             Term commands
+   user             User commands
 ```
 
 ### Develop your CLI using decorators:
