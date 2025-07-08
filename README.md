@@ -95,7 +95,8 @@ WP-Node requires an initialized configuration before use. You can scaffold a new
 To get started, you first need to create a test folder. Then, run the command to initialize the project. Here are the commands you can take as an example:
 
 ```sh
-mkdir /tmp/test-wp-node && cd /tmp/test-wp-node
+mkdir wp-node
+cd wp-node
 ```
 
 ```sh
