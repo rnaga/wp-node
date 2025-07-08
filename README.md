@@ -37,34 +37,8 @@ WP-Node is ideal for scenarios where you need direct access to WordPress databas
 
 - **Node.js** `>=22.0.0`
 - **MySQL** or **MariaDB**
+- **nvm**: Make sure you have [`nvm`](https://github.com/nvm-sh/nvm) command installed on your local machine.
 - Optional: Docker for local WordPress database setup
-
-#### nvm
-
-Make sure you have `nvm` command installed on your local machine. If you don't have one yet, you can go through [official nvm documentation](https://github.com/nvm-sh/nvm) for detailed installation steps and troubleshooting, or follow the steps below:
-
-```sh
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$(git ls-remote --refs https://github.com/nvm-sh/nvm.git | tail -n1 | awk '{print $2}' | sed 's/refs\/tags\///')/install.sh | bash
-```
-
-After installation, restart your terminal or run:
-
-```sh
-source ~/.nvm/nvm.sh
-```
-
-Verify the installation by running:
-
-```sh
-nvm --version
-```
-
-Once installed, you can use nvm to manage Node.js versions easily. For example:
-
-```sh
-nvm install 22
-nvm use 22
-```
 
 ## Installation
 
@@ -90,20 +64,18 @@ Visit http://localhost:8080 in your browser to complete the WordPress setup.
 
 ### Initialize WP-Node Project
 
-WP-Node requires an initialized configuration before use. You can scaffold a new project using the CLI.
-
-To get started, you first need to create a test folder. Then, run the command to initialize the project. Here are the commands you can take as an example:
+To get started, create a new folder for your project. This folder will serve as the root directory for your WP-Node application.
 
 ```sh
 mkdir wp-node
 cd wp-node
 ```
 
+Then, run the command to initialize the project and follow the prompts:
+
 ```sh
 npx @rnaga/wp-node-cli -- init
 ```
-
-Then enter prompts as follows:
 
 ```sh
 ✔ Enter your database hostname: · localhost
