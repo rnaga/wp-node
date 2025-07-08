@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDirs": ["./", "../../src"],
+    "noEmit": true,
+    "paths": {
+      "@rnaga/wp-node/*": ["../packages/core/src/*"],
+      "@rnaga/wp-node-cli/*": ["../packages/cli/src/*"],
+      "_wp/*": ["./_wp/*"]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "@rnaga/wp-node-cli",
+  "version": "1.1.1",
+  "description": "",
+  "bin": {
+    "wp-node": "./index.js"
+  },
+  "scripts": {
+    "build": "rm -rf ./dist && tsc --project tsconfig.build.json && npm run copyfiles && cp package.json ./dist/",
+    "clean": "tsc --build --clean",
+    "copyfiles": "copyfiles -u 1 \"src/**/*.d.ts\" dist && copyfiles -u 1 \"src/init/templates/**\" dist",
+    "wp-node": "NODE_ENV=development node ./dist/index.js",
+    "wp-node:dev": "NODE_ENV=production ts-node ./src/index.ts",
+    "copy-core-dist": "mkdir -p node_modules/@rnaga/wp-node && rsync -av ../core/dist/ node_modules/@rnaga/wp-node/",
+    "release": "../../scripts/release.sh"
+  },
+  "keywords": [
+    "cli",
+    "wordpress",
+    "typescript",
+    "node"
+  ],
+  "author": "Ryohei Nagatsuka",
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "copyfiles": "^2.4.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@rnaga/wp-node": "^1.0.102",
+    "chalk": "^5.3.0",
+    "commander": "^14.0.0",
+    "enquirer": "^2.4.1",
+    "moment-timezone": "^0.5.45",
+    "reflect-metadata": "^0.1.13",
+    "zod": "^3.22.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rnaga/wp-node.git"
+  },
+  "optionalDependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rnaga/wp-node/issues"
+  },
+  "homepage": "https://github.com/rnaga/wp-node"
+}

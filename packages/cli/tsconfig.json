@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "exclude": ["src/init/templates"],
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "@rnaga/wp-node/*": ["../core/dist/*"]
+    }
+  }
+}

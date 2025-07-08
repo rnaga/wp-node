@@ -1,0 +1,12 @@
+node_modules
+dist
+test-docker
+wpconfig/**/*
+wp.settings.ts
+*/index.ts
+.env
+.env*
+_wp/**/*
+_wp
+_wp*
+example.ts

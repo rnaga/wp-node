@@ -1,0 +1,42 @@
+{
+    "name": "@rnaga/workspace",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest",
+        "lint": "eslint ./src --ext .ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rnaga/wp-node.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
+    "main": "jest.config.ts",
+    "devDependencies": {
+        "@types/jest": "^30.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.35.1",
+        "@typescript-eslint/parser": "^8.35.1",
+        "eslint": "^9.30.1",
+        "eslint-plugin-tsdoc": "^0.4.0",
+        "jest": "^30.0.4",
+        "ts-jest": "^29.4.0",
+        "ts-node": "^10.9.2"
+    },
+    "version": "1.0.0",
+    "description": "",
+    "directories": {
+        "test": "test"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/rnaga/wp-node/issues"
+    },
+    "homepage": "https://github.com/rnaga/wp-node"
+}
