@@ -11,7 +11,7 @@ WP-Node is a Node.js project written in TypeScript that mirrors the WordPress da
 Key benefits include:
 
 - No need to run WordPress PHP
-- Type-safe interaction with WordPress tables (`posts`, `users`, `terms`, etc.)
+- Type-safe interaction with WordPress tables (`posts`, `users`, `terms`, `etc.`)
 - Utility classes for querying posts, terms, users, comments, and metadata
 - Supports both Single Site and Multi Site WordPress setups
 - CLI tools to seed databases and run custom commands
@@ -49,6 +49,33 @@ Its scope is intentionally limited to providing a type-safe, programmatic interf
 - **MySQL** or **MariaDB**
 - Optional: Docker for local WordPress database setup
 
+#### nvm
+
+Make sure you have `nvm` command installed on your local machine. If you don't have one yet, you can go through [official nvm documentation](https://github.com/nvm-sh/nvm) for detailed installation steps and troubleshooting, or follow the steps below:
+
+```sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/$(git ls-remote --refs https://github.com/nvm-sh/nvm.git | tail -n1 | awk '{print $2}' | sed 's/refs\/tags\///')/install.sh | bash
+```
+
+After installation, restart your terminal or run:
+
+```sh
+source ~/.nvm/nvm.sh
+```
+
+Verify the installation by running:
+
+```sh
+nvm --version
+```
+
+Once installed, you can use nvm to manage Node.js versions easily. For example:
+
+```sh
+nvm install 22
+nvm use 22
+```
+
 ## Installation
 
 To spin up a sample environment with WordPress and database in Docker:
@@ -75,9 +102,13 @@ Visit http://localhost:8080 in your browser to complete the WordPress setup.
 
 WP-Node requires an initialized configuration before use. You can scaffold a new project using the CLI.
 
+To get started, you first need to create a test folder. Then, run the command to initialize the project. Here are the commands you can take as an example:
+
 ```sh
-mkdir /tmp/test-wp-node
-cd /tmp/test-wp-node
+mkdir /tmp/test-wp-node && cd /tmp/test-wp-node
+```
+
+```sh
 npx @rnaga/wp-node-cli -- init
 ```
 
