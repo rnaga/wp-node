@@ -33,16 +33,6 @@ WP-Node is ideal for scenarios where you need direct access to WordPress databas
 - **Debugging or inspecting database records** from a modern TypeScript environment
 - **Creating a web app** (e.g., using Next.js) that needs to pull or push data from a WordPress database, without relying on PHP codebase
 
-## Limitations
-
-**WP-Node Core** is designed specifically to interact with the WordPress database. It does not support traditional WordPress features such as:
-
-- Themes and appearance settings, including updating styling
-- WordPress Template rendering or theming APIs
-- WordPress plugins
-
-Its scope is intentionally limited to providing a type-safe, programmatic interface to WordPress data — not replicating the full behavior of the WordPress runtime.
-
 ## Requirements
 
 - **Node.js** `>=22.0.0`
@@ -259,6 +249,16 @@ export class Post {
 
 - **Filter**: Modify data in chainable handlers (similar to `apply_filters`)
 - **Action**: Fire off side effects (`do_action` equivalent)
+
+## Limitations
+
+**WP-Node Core** is designed specifically to interact with the WordPress database. It does not support traditional WordPress features such as:
+
+- Themes and appearance settings, including updating styling
+- WordPress Template rendering or theming APIs
+- WordPress plugins
+
+Its scope is intentionally limited to providing a type-safe, programmatic interface to WordPress data — not replicating the full behavior of the WordPress runtime.
 
 ## Contributing
 
