@@ -11,7 +11,7 @@ WP-Node is a Node.js project written in TypeScript that mirrors the WordPress da
 Key benefits include:
 
 - No need to run WordPress PHP
-- Type-safe interaction with WordPress tables (`posts`, `users`, `terms`, `etc.`)
+- Type-safe interaction with WordPress tables (`posts`, `users`, `terms`, `comments`, `etc.`)
 - Utility classes for querying posts, terms, users, comments, and metadata
 - Supports both Single Site and Multi Site WordPress setups
 - CLI tools to seed databases and run custom commands
