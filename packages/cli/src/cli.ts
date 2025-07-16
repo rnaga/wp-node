@@ -1,7 +1,8 @@
 import { Command } from "commander";
 
 import Application from "@rnaga/wp-node/application";
-import { filterRecordByFields, jsonToCsv, settings } from "./utils";
+import { filterRecordByFields } from "@rnaga/wp-node/validators/helpers";
+import { jsonToCsv, settings } from "./utils";
 import { ZodType, z } from "zod";
 
 import type * as types from "@rnaga/wp-node/types";

@@ -34,59 +34,6 @@ export const getChalk = async () => {
   return (await import("chalk")).default;
 };
 
-export const filterRecordByFields = (
-  data: string | Record<string, unknown> | Record<string, unknown>[],
-  fields: string | undefined
-) => {
-  // If data is a string, return it as is
-  if (typeof data === "string") {
-    return data;
-  }
-
-  const fieldsSchema = z
-    .string()
-    .optional()
-    .transform((val) =>
-      val
-        ? val
-            .split(",")
-            .map((field) => field.trim())
-            .filter((field) => field.length > 0)
-        : []
-    );
-
-  const parsedFields = fieldsSchema.parse(fields);
-
-  // If fields are specified, filter the result data
-  if (0 == parsedFields.length) {
-    return data;
-  }
-
-  const filterObject: (record: Record<string, any>) => Record<string, any> = (
-    record: Record<string, any>
-  ): Record<string, any> => {
-    const filteredRecord: Record<string, any> = {};
-    parsedFields.forEach((field) => {
-      if (field in record) {
-        filteredRecord[field] = record[field as keyof typeof record];
-      }
-    });
-    return filteredRecord;
-  };
-
-  // If data is an object, filter it
-  if (typeof data === "object" && !Array.isArray(data)) {
-    return filterObject(data);
-  }
-
-  // If data is an array, filter each item
-  if (Array.isArray(data)) {
-    return data.map((item) => filterObject(item));
-  }
-
-  return data;
-};
-
 export const jsonToCsv = <T extends object>(data: T[]): string => {
   if (!data.length) return "";
 

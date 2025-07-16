@@ -10,3 +10,4 @@ _wp/**/*
 _wp
 _wp*
 example.ts
+.npmrc
