@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": false
+    "skipLibCheck": true
   },
   "exclude": ["src/cli/init/templates"]
 }
