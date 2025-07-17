@@ -1,0 +1,22 @@
+{
+  "name": "custom-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "copy-cli-dist": "mkdir -p node_modules/@rnaga/wp-node-cli && rsync -av --delete ../../packages/cli/dist/ node_modules/@rnaga/wp-node-cli/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@rnaga/wp-node": "latest",
+    "@rnaga/wp-node-cli": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "typescript": "^5.8.3"
+  }
+}

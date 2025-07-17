@@ -1,0 +1,21 @@
+{
+  "name": "posts",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "copy-core-dist": "mkdir -p node_modules/@rnaga/wp-node && rsync -av --delete ../../packages/core/dist/ node_modules/@rnaga/wp-node/",
+    "start": "ts-node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "latest",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "@rnaga/wp-node": ">=1.1.4"
+  }
+}
