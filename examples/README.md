@@ -4,19 +4,13 @@ This directory contains practical examples demonstrating how to use WP-Node in v
 
 ## Prerequisites
 
-Before running any examples, ensure you have:
-
-1. **WordPress Database**: A running WordPress installation or database
-2. **Node.js**: Version 22.0.0 or higher
-3. **Database Access**: Proper credentials to connect to your WordPress database
-
-For detailed setup instructions, see: [WP-Node Installation Guide](https://github.com/rnaga/wp-node?tab=readme-ov-file#installation)
+Make sure to follow the prerequisites in the [WP-Node Installation Guide](https://github.com/rnaga/wp-node?tab=readme-ov-file#installation).
 
 ## Available Examples
 
 ### 🌐 [Next.js Blog](./nextjs/)
 
-A complete Next.js application that creates a blog interface using WordPress data.
+A Next.js application that creates a blog interface using WordPress data.
 
 **Features:**
 
