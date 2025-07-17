@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { IgnorePlugin, DefinePlugin, ProvidePlugin } from "webpack";
+import { IgnorePlugin, ProvidePlugin } from "webpack";
 import path from "path";
 
 const nextConfig: NextConfig = {
@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
       new IgnorePlugin({
         resourceRegExp: /^oracledb|pg-query-stream$/,
       }),
-      // new DefinePlugin({
-      //   "process.env.FLUENTFFMPEG_COV": false,
-      // }),
       new ProvidePlugin({
         React: "react",
       })

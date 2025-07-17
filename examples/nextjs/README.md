@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WP-Node Next.js Blog Example
+
+This is a [Next.js](https://nextjs.org) blog application that demonstrates how to integrate WP-Node with a modern React framework to create a WordPress-powered blog interface.
+
+## What This Example Does
+
+This Next.js application showcases:
+
+- **WordPress Data Integration**: Fetches posts directly from a WordPress database using WP-Node
+- **Blog Listing Page**: Displays all published posts with titles, excerpts, and publication dates
+- **Dynamic Post Pages**: Individual post pages accessible via slug-based routing (`/[slug]`)
+- **Server-Side Rendering**: Renders WordPress content on the server for better SEO and performance
+- **Modern UI**: Clean, responsive design using Tailwind CSS
+- **Type Safety**: Full TypeScript integration with WordPress data structures
+
+## Prerequisites
+
+Before running this example, ensure you have:
+
+1. **WordPress Database**: A running WordPress installation or database
+2. **Node.js**: Version 22.0.0 or higher
+3. **WP-Node Configuration**: Proper database credentials and configuration
+
+For WordPress setup, see the [main WP-Node installation guide](https://github.com/rnaga/wp-node?tab=readme-ov-file#installation).
 
 ## Getting Started
 
-First, run the development server:
+1. **Install Dependencies**:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+   ```bash
+   npm install
+   ```
+
+2. **Run the Development Server**:
+
+   ```bash
+   npm run dev
+   ```
+
+3. **View the Application**:
+   Open [http://localhost:3000](http://localhost:3000) to see:
+   - **Home Page**: List of all blog posts
+   - **Individual Posts**: Navigate to `/[post-slug]` to view specific posts
+
+## Project Structure
+
+- `src/app/page.tsx` - Blog listing page showing all posts
+- `src/app/[slug]/page.tsx` - Dynamic post page for individual articles
+- `_wp/` - WP-Node configuration directory
+
+## Key Features Demonstrated
+
+### WordPress Data Fetching
+
+```typescript
+const wp = await Application.getContext();
+const posts = await wp.utils.crud.post.list({});
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Dynamic Routing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The `[slug]` route automatically handles WordPress post slugs, allowing URLs like:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/hello-world` - Displays the "Hello world!" post
+- `/my-first-post` - Displays a post with slug "my-first-post"
+
+It also accepts numeric Post IDs (corresponding to `wp_posts.ID`) such as:
+
+- `/1` - Displays the post with ID 1
+- `/42` - Displays the post with ID 42
+
+### Type-Safe WordPress Integration
+
+All WordPress data is properly typed, providing IntelliSense and compile-time error checking when working with post properties like `post_title`, `post_content`, `post_date`, etc.
+
+## Customization
+
+You can extend this example by:
+
+- Adding pagination to the post listing
+- Implementing category and tag filtering
+- Adding a search functionality
+- Creating custom post type support
+- Integrating WordPress user authentication
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [WP-Node Documentation](https://rnaga.github.io/wp-node/) - Learn about WP-Node features and API
