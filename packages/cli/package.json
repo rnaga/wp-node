@@ -1,6 +1,6 @@
 {
   "name": "@rnaga/wp-node-cli",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "",
   "bin": {
     "wp-node": "./index.js"
@@ -28,7 +28,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@rnaga/wp-node": "^1.0.102",
+    "@rnaga/wp-node": "latest",
     "chalk": "^5.3.0",
     "commander": "^14.0.0",
     "enquirer": "^2.4.1",
