@@ -17,6 +17,26 @@ Key benefits include:
 - CLI tools to seed databases and run custom commands
 - Clean architecture with Dependency Injection and decorators
 
+## Quick Start Example
+
+Here's an example of how to initialize WP-Node app and access WordPress post:
+
+```typescript
+import Application from "@rnaga/wp-node/application";
+
+(async () => {
+  // Initialize WP-Node application
+  const wp = await Application.getContext();
+
+  // Fetch a post with ID 1
+  const post = await wp.utils.query.posts((query) => {
+    query.where("ID", 1);
+  });
+
+  process.exit(0);
+})();
+```
+
 ## Features
 
 - **TypeScript-first**: Fully typed interfaces and schema validation using [Zod](https://zod.dev/)
