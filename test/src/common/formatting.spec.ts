@@ -8,7 +8,7 @@ const schemaTest = z.object({
   int: z.number(),
   obj: z.object({
     key1: z.string(),
-    ip: z.string().ip().optional(),
+    ip: z.string().optional(),
   }),
 });
 
@@ -34,7 +34,9 @@ test("validating", async () => {
   try {
     validating.field("posts", "ID", "string");
   } catch (e: any) {
-    expect(e.issues[0].message).toBe("Expected number, received string");
+    expect(e.issues[0].message).toBe(
+      "Invalid input: expected number, received string"
+    );
   }
 
   result = validating.fieldSafe("posts", "ID", "string");

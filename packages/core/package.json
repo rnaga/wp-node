@@ -1,6 +1,6 @@
 {
   "name": "@rnaga/wp-node",
-  "version": "1.1.4",
+  "version": "1.2.3",
   "description": "",
   "scripts": {
     "build": "rm -rf ./dist && tsc --project tsconfig.build.json && npm run copyfiles && cp package.json ./dist/",
@@ -20,22 +20,21 @@
   ],
   "author": "Ryohei Nagatsuka",
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22",
     "copyfiles": "^2.4.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.5.3",
+    "typescript": "^5.8.3",
     "wordpress-hash-node": "^1.0.0"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.0",
     "deep-object-diff": "^1.1.9",
     "knex": "^3.1.0",
-    "moment-timezone": "^0.5.45",
-    "mysql2": "^3.6.1",
+    "moment-timezone": "^0.6.0",
+    "mysql2": "^3.14.0",
     "php-serialize": "^5",
     "reflect-metadata": "^0.1.13",
-    "zod": "^3.22.4"
+    "zod": "^4.0.5"
   },
   "repository": {
     "type": "git",

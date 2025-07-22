@@ -21,7 +21,7 @@ export const commentUpsert = database.wpComments
         database.wpComments.shape.comment_approved,
       ]),
       comment_content: z.string().min(1).trim().max(65525),
-      comment_meta: z.record(z.any()).optional().default({}),
+      comment_meta: z.record(z.string(), z.any()).optional().default({}),
     })
   );
 

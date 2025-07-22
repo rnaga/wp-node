@@ -12,7 +12,9 @@ test("formatter", async () => {
   try {
     validator.field("posts", "ID", "string");
   } catch (e: any) {
-    expect(e.issues[0].message).toBe("Expected number, received string");
+    expect(e.issues[0].message).toBe(
+      "Invalid input: expected number, received string"
+    );
   }
 
   const result2 = validator.fieldSafe("posts", "ID", "string");

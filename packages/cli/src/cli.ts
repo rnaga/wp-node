@@ -21,6 +21,9 @@ class CommandHelper {
   }
 
   set program(program: Command) {
+    // Avoid error: too many arguments.
+    // https://github.com/tj/commander.js/blob/master/CHANGELOG.md#1300-2024-12-30
+    program.allowExcessArguments();
     this.#parsed = program.parse(this.argv);
   }
 
@@ -48,10 +51,17 @@ class CommandHelper {
     return val.parse(this.program.opts()[key]);
   }
 
-  getArg<T extends ZodType<any, any, any>>(index: number, val?: T): z.infer<T> {
+  getArg<T extends ZodType<any, any, any>>(
+    index: number,
+    val?: T
+  ): z.infer<T> | undefined {
     const arg = this.program.args[index];
 
-    return val ? val.parse(arg) : arg;
+    if (typeof arg === "undefined") {
+      return undefined;
+    }
+
+    return val ? val.parse(arg) : (arg as z.infer<T>);
   }
 }
 

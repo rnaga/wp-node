@@ -1,11 +1,12 @@
 // To execute this script, run:
 // npx ts-node index.ts
 
-import { PickZodObjectKeyInArray } from "@rnaga/wp-node/types/validating";
 import "./_wp/settings";
+
+import { z } from "zod";
+
 import Application from "@rnaga/wp-node/application";
 import * as vals from "@rnaga/wp-node/validators";
-import * as helpers from "@rnaga/wp-node/validators/helpers";
 
 // This script demonstrates how to fetch posts.
 (async () => {
@@ -24,11 +25,11 @@ import * as helpers from "@rnaga/wp-node/validators/helpers";
 
   // Then get the post based on the ID
   const newPost = await context.utils.post.get(postId);
-  console.log("Created Post:", newPost);
+  console.log("Created Post:", newPost.props);
 
   // Fetch posts by running a query
   // This example fetches posts with ID 1
-  const posts = (await context.utils.query.posts(
+  const posts = await context.utils.query.posts(
     (query) => {
       query.where("post_type", "post");
       query.select(["ID", "post_title", "post_date"]);
@@ -37,19 +38,17 @@ import * as helpers from "@rnaga/wp-node/validators/helpers";
     },
 
     // The second argument is a result validator.
-    // Since we are selecting specific fields, we use a formatter to validate and pick only those fields.
-    // This ensures type safety by narrowing the result type with PickZodObjectKeyInArray.
-    helpers.arrayRecordByField(vals.query.postsResult, [
-      "ID",
-      "post_title",
-      "post_date",
-    ])
-  )) as PickZodObjectKeyInArray<
-    typeof vals.query.postsResult,
-    "ID" | "post_title" | "post_date"
-  >;
+    // Since we are selecting specific fields, we pick specific fields from the predefined schema.
+    z.array(
+      vals.query.postsResult.element.pick({
+        ID: true,
+        post_title: true,
+        post_date: true,
+      })
+    )
+  );
 
   // Log the fetched posts
-  console.log(posts[0]);
+  console.log(posts?.[0]);
   process.exit(0);
 })();

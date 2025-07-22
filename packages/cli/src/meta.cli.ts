@@ -37,13 +37,17 @@ export class MetaCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const metaType = this.command.getArg(0, vals.helpers.stringMetaTable);
+    if (!metaType) {
+      this.output("error", "Invalid or missing metaType");
+      return;
+    }
     if (!this.validateMetaType(metaType, context)) {
       return;
     }
 
     const metaId = this.command.getArg(1, vals.helpers.number);
 
-    const meta = await context.utils.crud.meta.get(metaType, metaId);
+    const meta = await context.utils.crud.meta.get(metaType, metaId!);
 
     if (!meta.data) {
       this.output("error", "Meta not found");
@@ -84,12 +88,12 @@ export class MetaCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const metaType = this.command.getArg(0, vals.helpers.stringMetaTable);
-    if (!this.validateMetaType(metaType, context)) {
+    if (!this.validateMetaType(metaType!, context)) {
       return;
     }
 
     const metas = await context.utils.crud.meta.list(
-      metaType,
+      metaType!,
       {
         search: this.options.search,
         include: this.options.include?.join(","),
@@ -137,12 +141,12 @@ export class MetaCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const metaType = this.command.getArg(0, vals.helpers.stringMetaTable);
-    if (!this.validateMetaType(metaType, context)) {
+    if (!this.validateMetaType(metaType!, context)) {
       return;
     }
 
     const result = await context.utils.crud.meta.update(
-      metaType,
+      metaType!,
       parseInt(this.options.objectId),
       {
         [this.options.metaKey]: this.options.metaValue,
@@ -179,12 +183,12 @@ export class MetaCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const metaType = this.command.getArg(0, vals.helpers.stringMetaTable);
-    if (!this.validateMetaType(metaType, context)) {
+    if (!this.validateMetaType(metaType!, context)) {
       return;
     }
 
     const result = await context.utils.crud.meta.delete(
-      metaType,
+      metaType!,
       parseInt(this.options.objectId),
       [this.options.metaKey]
     );

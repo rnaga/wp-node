@@ -1,6 +1,6 @@
 {
   "name": "@rnaga/wp-node-cli",
-  "version": "1.1.5",
+  "version": "1.2.1",
   "description": "",
   "bin": {
     "wp-node": "./index.js"
@@ -22,10 +22,10 @@
   ],
   "author": "Ryohei Nagatsuka",
   "devDependencies": {
-    "@types/node": "^20.14.10",
+    "@types/node": "^22",
     "copyfiles": "^2.4.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.5.3"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@rnaga/wp-node": "latest",
@@ -34,7 +34,7 @@
     "enquirer": "^2.4.1",
     "moment-timezone": "^0.5.45",
     "reflect-metadata": "^0.1.13",
-    "zod": "^3.22.4"
+    "zod": "^4.0.5"
   },
   "repository": {
     "type": "git",

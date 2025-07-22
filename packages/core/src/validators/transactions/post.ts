@@ -5,7 +5,7 @@ const metaValue = z.union([
   z.string(),
   z.number(),
   z.array(z.union([z.string(), z.number()])),
-  z.record(z.any()),
+  z.record(z.string(), z.any()),
 ]);
 
 export const postUpsert = database.wpPosts
@@ -37,7 +37,7 @@ export const postUpsert = database.wpPosts
           ])
         )
         .optional(),
-      meta_input: z.record(metaValue).default({}).optional(),
+      meta_input: z.record(z.string(), metaValue).default({}).optional(),
       file: z.string().optional().default(""),
       context: z.string().optional().default(""),
     })

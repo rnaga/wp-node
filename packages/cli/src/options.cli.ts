@@ -19,7 +19,7 @@ export class OptionsCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const optionName = this.command.getArg(0, vals.helpers.string);
-    const option = await context.options.get(optionName);
+    const option = await context.options.get(optionName!);
 
     if (!option) {
       this.output("error", "Option not found");
@@ -100,7 +100,7 @@ export class OptionsCli extends Cli {
     const optionValue = this.command.getArg(1);
 
     const result = await context.utils.trx.options.insert(
-      optionName,
+      optionName!,
       optionValue,
       {
         autoload: this.options.autoload ? "yes" : "no",
@@ -132,7 +132,7 @@ export class OptionsCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const optionName = this.command.getArg(0, vals.helpers.string);
-    const option = await context.options.get(optionName);
+    const option = await context.options.get(optionName!);
 
     if ("undefined" === typeof option) {
       this.output("error", "Option not found");

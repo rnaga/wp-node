@@ -5,7 +5,7 @@ import type * as types from "../types";
 @component()
 export class Vars {
   static globalMap = new Map();
-  map = new Map();
+  map = new Map<string, any>();
 
   get TABLES_MS_CURRENT_INDEX() {
     return this.map.get("TABLES_MS_CURRENT_INDEX") ?? 0;
@@ -36,7 +36,7 @@ export class Vars {
   }
 
   set USER_ROLES(roles: types.Roles) {
-    this.map.set("USER_ROLES", roles);
+    this.map.set("USER_ROLES", roles as types.Roles);
   }
 
   set TZ_IDENTIFIER(tz: string) {

@@ -19,14 +19,14 @@ export class PostCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const postId = this.command.getArg(0, vals.helpers.number);
-    const post = await context.utils.post.get(postId);
+    const post = await context.utils.post.get(postId!);
 
     if (!post.props) {
       this.output("error", "Post not found");
       return;
     }
 
-    const result = await context.utils.crud.post.get(postId, {
+    const result = await context.utils.crud.post.get(postId!, {
       context: this.options.more ? "edit" : "view",
     });
 
@@ -112,14 +112,14 @@ export class PostCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const postId = this.command.getArg(0, vals.helpers.number);
-    const post = await context.utils.post.get(postId);
+    const post = await context.utils.post.get(postId!);
 
     if (!post.props) {
       this.output("error", "Post not found");
       return;
     }
 
-    const result = await context.utils.crud.post.update(postId, {
+    const result = await context.utils.crud.post.update(postId!, {
       post_title: this.options.title ?? post.props.post_title,
       post_name: this.options.name ?? post.props.post_name,
       post_content: this.options.content ?? post.props.post_content,
@@ -159,8 +159,8 @@ export class PostCli extends Cli {
     const postId = this.command.getArg(0, vals.helpers.number);
 
     const result = this.options.force
-      ? await context.utils.crud.post.delete(postId)
-      : await context.utils.crud.post.trash(postId);
+      ? await context.utils.crud.post.delete(postId!)
+      : await context.utils.crud.post.trash(postId!);
 
     if (!result.data) {
       this.output("error", "Failed to delete post");

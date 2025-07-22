@@ -23,7 +23,7 @@ export class SiteCli extends Cli {
 
     const siteId = this.command.getArg(0, vals.helpers.number);
 
-    const result = await context.utils.crud.site.get(siteId);
+    const result = await context.utils.crud.site.get(siteId!);
 
     if (!result.data) {
       this.output("error", `Site not found - ${this.options.site}`);
@@ -89,7 +89,7 @@ export class SiteCli extends Cli {
 
     const siteId = this.command.getArg(0, vals.helpers.number);
 
-    const result = await context.utils.crud.site.update(siteId, {
+    const result = await context.utils.crud.site.update(siteId!, {
       domain: this.options.domain,
       path: this.options.path,
     });
@@ -143,7 +143,7 @@ export class SiteCli extends Cli {
 
     const newSiteId = this.command.getOption("newSiteId", vals.helpers.number);
 
-    const result = await context.utils.crud.site.delete(siteId, {
+    const result = await context.utils.crud.site.delete(siteId!, {
       newSiteId,
     });
 

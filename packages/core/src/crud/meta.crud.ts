@@ -255,7 +255,12 @@ export class MetaCrud extends Crud {
 
       if (parsedArgs.orderby) {
         query.builder.orderBy(
-          column(`${table}meta`, parsedArgs.orderby),
+          column(
+            `${table}meta`,
+            parsedArgs.orderby === "meta_id" && table === "user"
+              ? "umeta_id"
+              : parsedArgs.orderby
+          ),
           parsedArgs.order
         );
       }

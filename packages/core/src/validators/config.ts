@@ -124,4 +124,4 @@ export const config = z.object({
   roles,
 });
 
-export const configs = z.record(config);
+export const configs = z.record(z.string(), config);

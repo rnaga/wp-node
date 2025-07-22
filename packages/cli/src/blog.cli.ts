@@ -25,7 +25,7 @@ export class BlogCli extends Cli {
 
     const blogId = this.command.getArg(0, vals.helpers.number);
 
-    const result = await context.utils.crud.blog.get(blogId);
+    const result = await context.utils.crud.blog.get(blogId!);
 
     if (!result.data) {
       this.output("error", "Blog not found");
@@ -134,14 +134,14 @@ export class BlogCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const blogId = this.command.getArg(0, vals.helpers.number);
-    const blog = await context.utils.crud.blog.get(blogId);
+    const blog = await context.utils.crud.blog.get(blogId!);
 
     if (!blog.data) {
       this.output("error", "Blog not found");
       return;
     }
 
-    const result = await context.utils.crud.blog.update(blogId, {
+    const result = await context.utils.crud.blog.update(blogId!, {
       domain: this.options.domain ?? blog.data.domain,
       path: this.options.path ?? blog.data.path,
     });
@@ -189,7 +189,7 @@ export class BlogCli extends Cli {
     const context = await Application.getContext();
     await context.current.assumeUser(this.assumedUserId);
 
-    const result = await context.utils.crud.blog.delete(blogId);
+    const result = await context.utils.crud.blog.delete(blogId!);
 
     if (!result.data) {
       this.output("error", "Failed to delete blog");
@@ -223,7 +223,7 @@ export class BlogCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const blogId = this.command.getArg(0, vals.helpers.number);
-    const blog = await context.utils.crud.blog.get(blogId);
+    const blog = await context.utils.crud.blog.get(blogId!);
 
     if (!blog.data) {
       this.output("error", "Blog not found");
@@ -233,8 +233,8 @@ export class BlogCli extends Cli {
     const flag = this.command.getArg(1, vals.helpers.blogFlag);
     const activate = this.command.getArg(2, z.enum(["on", "off"]));
 
-    const result = await context.utils.crud.blog.update(blogId, {
-      [flag]: activate == "on" ? 1 : 0,
+    const result = await context.utils.crud.blog.update(blogId!, {
+      [flag as string]: activate == "on" ? 1 : 0,
     });
 
     if (!result.data) {

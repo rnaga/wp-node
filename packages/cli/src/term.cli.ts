@@ -32,7 +32,7 @@ export class TermCli extends Cli {
       const term = await context.utils.query.terms((query) => {
         query
           .whereIn("name", [this.options.name])
-          .where("taxonomy", taxonomy)
+          .where("taxonomy", taxonomy as types.TaxonomyName)
           .builder.limit(1);
       });
 
@@ -125,7 +125,7 @@ export class TermCli extends Cli {
 
     const result = await context.utils.crud.term.create({
       taxonomyName: taxonomy as types.TaxonomyName,
-      name: termName,
+      name: termName!,
       description: this.options.description,
       parent: this.options.parent ? parseInt(this.options.parent) : undefined,
       slug: this.options.slug,
@@ -158,7 +158,7 @@ export class TermCli extends Cli {
     const termId = this.command.getArg(1, vals.helpers.number);
 
     const result = await context.utils.crud.term.update(
-      termId,
+      termId!,
       taxonomy as types.TaxonomyName,
       {
         name: this.options.name,
@@ -191,7 +191,7 @@ export class TermCli extends Cli {
     const termId = this.command.getArg(1, vals.helpers.number);
 
     const result = await context.utils.crud.term.delete(
-      termId,
+      termId!,
       taxonomy as types.TaxonomyName
     );
 

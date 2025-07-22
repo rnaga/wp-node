@@ -21,7 +21,9 @@ export class RolesCli extends Cli {
 
     const role = this.command.getArg(0, vals.helpers.string);
 
-    return Object.keys(roles).includes(role) ? roles[role] : undefined;
+    return Object.keys(roles).includes(role as keyof typeof roles)
+      ? roles[role as keyof typeof roles]
+      : undefined;
   }
 
   @subcommand("get", { description: "Get a role" })
@@ -108,7 +110,7 @@ export class RolesCli extends Cli {
     }
 
     const result = await context.utils.crud.roles.create({
-      role: roleKey,
+      role: roleKey!,
       name: this.options.roleName ?? roleKey,
       capabilities,
     });
@@ -166,7 +168,7 @@ export class RolesCli extends Cli {
       role.name = this.options.roleName;
     }
 
-    const result = await context.utils.crud.roles.update(roleKey, {
+    const result = await context.utils.crud.roles.update(roleKey!, {
       name: role.name,
       capabilities: role.capabilities,
     });
@@ -201,7 +203,7 @@ export class RolesCli extends Cli {
     }
 
     const roleKey = this.command.getArg(0, vals.helpers.string);
-    const result = await context.utils.crud.roles.delete(roleKey);
+    const result = await context.utils.crud.roles.delete(roleKey!);
 
     if (!result.data) {
       this.output("error", "Failed to delete role");

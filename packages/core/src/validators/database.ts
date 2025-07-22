@@ -49,11 +49,11 @@ export const wpComments = z.object({
     z.string().max(0).optional(),
   ]),
   comment_author_url: z.union([
-    z.string().url().max(100).trim().default(""),
+    z.string().max(100).trim().default(""),
     z.string().max(0).optional(),
   ]),
   comment_author_IP: z.union([
-    z.string().trim().max(100).ip().default(""),
+    z.string().trim().max(100).default(""),
     z.string().max(0).optional(),
   ]),
   comment_date: mySQLDate,
@@ -73,7 +73,7 @@ export const wpComments = z.object({
 // Define the schema for the `wp_links` table
 export const wpLinks = z.object({
   link_id: z.number().int().nonnegative(),
-  link_url: z.string().max(255).url().trim(),
+  link_url: z.string().max(255).trim(),
   link_name: z.string().max(255).trim(),
   link_image: z.string().max(255).trim().default(""),
   link_target: z.string().max(25).trim().default(""),
@@ -85,7 +85,7 @@ export const wpLinks = z.object({
   link_rel: z.string().max(255).trim().default(""),
   link_notes: z.string().trim().optional().default(""),
   link_rss: z.union([
-    z.string().max(255).url().trim(), //.transform(undefinedIfEmptyString),
+    z.string().max(255).trim(), //.transform(undefinedIfEmptyString),
     z.string().max(0).optional().default(""),
   ]),
 });
@@ -137,7 +137,7 @@ export const wpPosts = z.object({
 export const wpRegistrationLog = z.object({
   ID: z.number().int().nonnegative(),
   email: z.string().email().trim(),
-  IP: z.union([z.string().ip().trim(), z.string().max(0).optional()]),
+  IP: z.union([z.string().trim(), z.string().max(0).optional()]),
   blog_id: z.number().int().nonnegative(),
   date_registered: mySQLDate,
 });
@@ -228,7 +228,7 @@ export const wpUsers = z.object({
   user_nicename: z.string().max(50).trim().default(""),
   user_email: z.string().email().max(100).trim().default(""),
   user_url: z.union([
-    z.string().url().max(100).trim().default(""),
+    z.string().max(100).trim().default(""),
     z.string().max(0).optional(),
   ]),
   user_registered: mySQLDateWithZeroDefaultDate,

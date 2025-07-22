@@ -19,14 +19,14 @@ export class CommentCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const commentId = this.command.getArg(0, vals.helpers.number);
-    const comment = await context.utils.comment.get(commentId);
+    const comment = await context.utils.comment.get(commentId!);
 
     if (!comment.props) {
       this.output("error", "Comment not found");
       return;
     }
 
-    const result = await context.utils.crud.comment.get(commentId, {
+    const result = await context.utils.crud.comment.get(commentId!, {
       context: this.options.more === true ? "edit" : "view",
     });
 
@@ -141,14 +141,14 @@ export class CommentCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const commentId = this.command.getArg(0, vals.helpers.number);
-    const comment = await context.utils.comment.get(commentId);
+    const comment = await context.utils.comment.get(commentId!);
 
     if (!comment.props) {
       this.output("error", "Comment not found");
       return;
     }
 
-    const result = await context.utils.crud.comment.update(commentId, {
+    const result = await context.utils.crud.comment.update(commentId!, {
       comment_content: this.options.content,
       comment_author: this.options.author,
       comment_approved: this.options.status,
@@ -183,7 +183,7 @@ export class CommentCli extends Cli {
     const commentId = this.command.getArg(0, vals.helpers.number);
     const force = this.command.getOption("force", vals.helpers.boolean);
 
-    const result = await context.utils.crud.comment.delete(commentId, force);
+    const result = await context.utils.crud.comment.delete(commentId!, force);
 
     if (!result.data) {
       this.output("error", "Failed to delete comment");

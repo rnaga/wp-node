@@ -55,7 +55,7 @@ export const userUpsert = database.wpUsers.merge(
         z.array(z.enum([...ROLE_NAMES])).optional(),
         z.array(z.string()).optional(),
       ]),
-      meta_input: z.record(z.any()).optional().default({}),
+      meta_input: z.record(z.string(), z.any()).optional().default({}),
     })
     .merge(userUpsertMeta)
 );

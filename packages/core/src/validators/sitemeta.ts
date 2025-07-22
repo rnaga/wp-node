@@ -9,12 +9,12 @@ export const sitemeta = z.object({
   blog_upload_space: z.number(),
   fileupload_maxk: z.number(),
   site_admins: z.array(z.string()), // Assuming 'siteAdmins' is an array of strings
-  allowedthemes: z.record(z.literal(true)), // Object with keys and boolean 'true' as value
+  allowedthemes: z.record(z.string(), z.literal(true)), // Object with keys and boolean 'true' as value
   illegal_names: z.array(z.string()), // Array of strings
   wpmu_upgrade_site: z.number(), // Assuming 'WP_DB_VERSION' is a number
   welcome_email: z.string(),
   first_post: z.string(),
-  siteurl: z.string().url(),
+  siteurl: z.string(),
   add_new_users: z.number().min(0).max(1), // 0 or 1
   upload_space_check_disabled: z.number().min(0).max(1), // 0 or 1
   subdomain_install: z.string(), // Assuming it's a string
@@ -27,7 +27,7 @@ export const sitemeta = z.object({
   menu_items: z.array(z.string()), // Assuming it's an array of strings
   first_page: z.string(),
   first_comment: z.string(),
-  first_comment_url: z.string().url(), // Assuming it's a valid URL
+  first_comment_url: z.string(), // Assuming it's a valid URL
   first_comment_author: z.string(),
   welcome_user_email: z.string().email(), // Assuming it's a valid email
   limited_email_domains: z.array(z.string().email()), // Assuming it's an array of valid email domains

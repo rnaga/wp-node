@@ -2,8 +2,8 @@ import { z } from "zod";
 import { mySQLDateWithZeroDefaultDate } from "./date";
 
 export const options = z.object({
-  siteurl: z.string().url(),
-  home: z.string().url(),
+  siteurl: z.string(),
+  home: z.string(),
   blogname: z.string(),
   blogdescription: z.string(),
   users_can_register: z.number().min(0).max(1),
@@ -15,7 +15,7 @@ export const options = z.object({
   comments_notify: z.number().min(0).max(1),
   posts_per_rss: z.number(),
   rss_use_excerpt: z.number().min(0).max(1),
-  mailserver_url: z.string().url(),
+  mailserver_url: z.string(),
   mailserver_login: z.string().email(),
   mailserver_pass: z.string(),
   mailserver_port: z.number(),
@@ -36,7 +36,7 @@ export const options = z.object({
   moderation_keys: z.string(),
   active_plugins: z.array(z.string()),
   category_base: z.string(),
-  ping_sites: z.string().url(),
+  ping_sites: z.string(),
   comment_max_links: z.number(),
   gmt_offset: z.any(), // You might want to define this more strictly based on how gmtOffset is defined
   default_email_category: z.number(),

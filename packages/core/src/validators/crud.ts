@@ -148,8 +148,8 @@ export const commentListParams = z.object({
 export const settings = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  url: z.string().url().optional(),
-  home: z.string().url().optional(),
+  url: z.string().optional(),
+  home: z.string().optional(),
   email: z.string().email().optional(),
   timezone: z.string().optional(),
   date_format: z.string().optional(),

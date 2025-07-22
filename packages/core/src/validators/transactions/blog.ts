@@ -7,7 +7,7 @@ export const blogUpsertBase = database.wpBlogs
   })
   .merge(
     z.object({
-      blog_meta: z.record(z.any()).optional().default({}),
+      blog_meta: z.record(z.string(), z.any()).optional().default({}),
     })
   );
 
@@ -24,7 +24,10 @@ export const blogUpsert = z.union([
     z.object({
       user_id: z.number().int().nonnegative(),
       title: z.union([z.string().optional().default(""), z.undefined()]),
-      options: z.union([z.record(z.any()).optional(), z.undefined()]),
+      options: z.union([
+        z.record(z.string(), z.any()).optional(),
+        z.undefined(),
+      ]),
       blog_id: z.undefined(),
     })
   ),

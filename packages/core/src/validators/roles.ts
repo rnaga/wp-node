@@ -5,4 +5,4 @@ export const role = z.object({
   capabilities: z.array(z.string()),
 });
 
-export const roles = z.record(role);
+export const roles = z.record(z.string(), role);

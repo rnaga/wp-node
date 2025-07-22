@@ -20,7 +20,7 @@ export class UserCli extends Cli {
     await context.current.assumeUser(this.assumedUserId);
 
     const userRef = this.command.getArg(0, vals.helpers.userRef);
-    const user = await context.utils.user.get(userRef);
+    const user = await context.utils.user.get(userRef!);
 
     if (!user.props) {
       this.output("error", "User not found");
@@ -53,7 +53,7 @@ export class UserCli extends Cli {
     const context = await Application.getContext();
     await context.current.assumeUser(this.assumedUserId);
 
-    const user = await context.utils.user.get(userRef);
+    const user = await context.utils.user.get(userRef!);
 
     if (!user.props) {
       this.output("error", "User not found");
@@ -62,7 +62,7 @@ export class UserCli extends Cli {
 
     const userId = user.props.ID;
 
-    const result = await context.utils.crud.user.updateRole(userId, [roleKey]);
+    const result = await context.utils.crud.user.updateRole(userId, [roleKey!]);
 
     if (!result.data) {
       this.output("error", "Failed to add role");
@@ -91,7 +91,7 @@ export class UserCli extends Cli {
     const context = await Application.getContext();
     await context.current.assumeUser(this.assumedUserId);
 
-    const user = await context.utils.user.get(userRef);
+    const user = await context.utils.user.get(userRef!);
 
     if (!user.props) {
       this.output("error", "User not found");
@@ -101,7 +101,7 @@ export class UserCli extends Cli {
     const userId = user.props.ID;
     const role = await user.roles();
 
-    if (!role.includes(roleKey)) {
+    if (!role.includes(roleKey!)) {
       this.output("error", "User does not have the role");
       return;
     }
@@ -186,7 +186,7 @@ export class UserCli extends Cli {
 
     const userRef = this.command.getArg(0, vals.helpers.userRef);
 
-    const user = await context.utils.user.get(userRef);
+    const user = await context.utils.user.get(userRef!);
 
     if (!user.props) {
       this.output("error", "User not found");
@@ -252,7 +252,7 @@ export class UserCli extends Cli {
     const context = await Application.getContext();
     await context.current.assumeUser(this.assumedUserId);
 
-    const user = await context.utils.user.get(userRef);
+    const user = await context.utils.user.get(userRef!);
 
     if (!user.props) {
       this.output("error", "User not found");
