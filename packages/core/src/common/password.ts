@@ -1,4 +1,5 @@
 import * as crypto from "crypto";
+import bcryptjs from "bcryptjs";
 
 export const hashPassword = (plainText: string) => {
   const passwordHash = new PasswordHash(8, true);
@@ -219,20 +220,90 @@ class PasswordHash {
     return "*";
   }
 
+  // https://github.com/WordPress/wordpress-develop/blob/063a74f93f0a89d1d92fac1f25c49a379ab3476b/src/wp-includes/pluggable.php#L2740
   checkPassword(password: string, storedHash: string): boolean {
+    // Passwords longer than 4096 characters are not supported
     if (password.length > 4096) {
       return false;
     }
 
-    let hash = this.cryptPrivate(password, storedHash);
-    if (hash[0] === "*") {
-      hash = crypto
-        .createHash("md5")
-        .update(password, "binary")
-        .digest("binary");
-      hash = this.cryptPrivate(password, storedHash);
+    // Check the hash using md5 regardless of the current hashing mechanism (legacy support)
+    if (storedHash.length <= 32) {
+      const md5Hash = crypto.createHash("md5").update(password).digest("hex");
+      return this.hashEquals(storedHash, md5Hash);
     }
 
-    return hash === storedHash;
+    // Check the password using the current WordPress prefixed hash ($wp$ prefix)
+    if (storedHash.startsWith("$wp$")) {
+      try {
+        // WordPress 6.8+ uses SHA384 HMAC preprocessing before bcrypt
+        const passwordToVerify = crypto
+          .createHmac("sha384", "wp-sha384")
+          .update(password)
+          .digest("base64");
+        const bcryptHash = storedHash.substring(3); // Remove "$wp" prefix
+        return this.verifyPassword(passwordToVerify, bcryptHash);
+      } catch (err) {
+        console.error("Error verifying WordPress prefixed hash:", err);
+        return false;
+      }
+    }
+
+    // Check the password using phpass ($P$ prefix)
+    if (storedHash.startsWith("$P$")) {
+      let hash = this.cryptPrivate(password, storedHash);
+      if (hash[0] === "*") {
+        hash = crypto
+          .createHash("md5")
+          .update(password, "binary")
+          .digest("binary");
+        hash = this.cryptPrivate(password, storedHash);
+      }
+      return hash === storedHash;
+    }
+
+    // Check the password using compat support for any non-prefixed hash (bcrypt, Argon2, etc.)
+    try {
+      return this.verifyPassword(password, storedHash);
+    } catch (err) {
+      console.error("Error verifying non-prefixed hash:", err);
+      return false;
+    }
+  }
+
+  /**
+   * Secure hash comparison to prevent timing attacks
+   */
+  private hashEquals(hash1: string, hash2: string): boolean {
+    if (hash1.length !== hash2.length) {
+      return false;
+    }
+
+    let result = 0;
+    for (let i = 0; i < hash1.length; i++) {
+      result |= hash1.charCodeAt(i) ^ hash2.charCodeAt(i);
+    }
+
+    return result === 0;
+  }
+
+  /**
+   * Verify password using modern hashing algorithms (bcrypt, Argon2, etc.)
+   */
+  private verifyPassword(password: string, hash: string): boolean {
+    try {
+      // Try bcrypt first (most common)
+      if (hash.match(/^\$2[axyb]\$/)) {
+        return bcryptjs.compareSync(password, hash);
+      }
+
+      // For other algorithms, we would need additional libraries
+      // For now, we'll just try bcrypt and return false for unsupported formats
+      console.warn(`Unsupported hash format: ${hash.substring(0, 10)}...`);
+      return false;
+    } catch (err) {
+      console.error("Error in password verification:", err);
+      return false;
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@rnaga/wp-node",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "",
   "scripts": {
     "build": "rm -rf ./dist && tsc --project tsconfig.build.json && npm run copyfiles && cp package.json ./dist/",
@@ -27,7 +27,8 @@
     "wordpress-hash-node": "^1.0.0"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.2",
     "deep-object-diff": "^1.1.9",
     "knex": "^3.1.0",
     "moment-timezone": "^0.6.0",
