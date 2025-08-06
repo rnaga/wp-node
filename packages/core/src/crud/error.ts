@@ -36,22 +36,11 @@ export class StatusCodeMapper {
 
 class CustomError extends Error {
   public statusCode: StatusCode;
-  public isOperational: boolean;
 
-  constructor(
-    message: string,
-    statusMessage: StatusMessage,
-    isOperational: boolean = true,
-    stack = ""
-  ) {
+  constructor(message: string, statusMessage: StatusMessage) {
     super(message);
     this.statusCode = StatusCodeMapper.getCode(statusMessage);
-    this.isOperational = isOperational;
-    if (stack) {
-      this.stack = stack;
-    } else {
-      Error.captureStackTrace(this, this.constructor);
-    }
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
@@ -60,7 +49,7 @@ export class CrudError extends CustomError {
     statusMessage: StatusMessage = StatusMessage.INTERNAL_SERVER_ERROR,
     detail: string
   ) {
-    super(`Error: ${detail}`, statusMessage, true);
+    super(`Error: ${detail}`, statusMessage);
     Object.setPrototypeOf(this, CrudError.prototype);
   }
 }
