@@ -1,6 +1,6 @@
 {
   "name": "@rnaga/wp-node-cli",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "",
   "bin": {
     "wp-node": "./index.js"

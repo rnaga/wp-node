@@ -15,10 +15,13 @@ export class InitCli extends Cli {
   async default() {
     const { prompts, program } = wpConfig();
     try {
-      const wpInput = await program.parseAsync(process.argv).then(() => {
-        const options = program.opts();
-        return prompts(options);
-      });
+      const wpInput = await program
+        // Filter out the "--" argument that is used to separate options from positional arguments
+        .parseAsync(process.argv.filter((v) => v !== "--"))
+        .then(() => {
+          const options = program.opts();
+          return prompts(options);
+        });
 
       init(wpInput);
 
