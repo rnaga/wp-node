@@ -7,7 +7,7 @@ export const options = z.object({
   blogname: z.string(),
   blogdescription: z.string(),
   users_can_register: z.number().min(0).max(1),
-  admin_email: z.string().email(),
+  admin_email: z.email(),
   start_of_week: z.number().min(0).max(1), // You might want to have specific checks if it's always "0" or "1"
   use_balanceTags: z.number().min(0).max(1),
   use_smilies: z.number().min(0).max(1),
@@ -16,7 +16,7 @@ export const options = z.object({
   posts_per_rss: z.number(),
   rss_use_excerpt: z.number().min(0).max(1),
   mailserver_url: z.string(),
-  mailserver_login: z.string().email(),
+  mailserver_login: z.email(),
   mailserver_pass: z.string(),
   mailserver_port: z.number(),
   default_category: z.number(),

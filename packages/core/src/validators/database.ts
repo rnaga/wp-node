@@ -45,7 +45,7 @@ export const wpComments = z.object({
   //   z.string().max(0).optional(),
   // ]),
   comment_author_email: z.union([
-    z.string().max(100).email().trim(), //.transform(undefinedIfEmptyString),
+    z.email().max(100).trim(),
     z.string().max(0).optional(),
   ]),
   comment_author_url: z.union([
@@ -136,7 +136,7 @@ export const wpPosts = z.object({
 // Define the schema for the `wp_registration_log` table
 export const wpRegistrationLog = z.object({
   ID: z.number().int().nonnegative(),
-  email: z.string().email().trim(),
+  email: z.email().trim(),
   IP: z.union([z.string().trim(), z.string().max(0).optional()]),
   blog_id: z.number().int().nonnegative(),
   date_registered: mySQLDate,
@@ -149,7 +149,7 @@ export const wpSignups = z.object({
   path: z.string().max(100).trim().default(""),
   title: z.string().trim(),
   user_login: z.string().max(60).trim().default(""),
-  user_email: z.string().email().max(100).trim().default(""),
+  user_email: z.email().max(100).trim().default(""),
   registered: mySQLDate,
   activated: mySQLDate,
   active: z.number().max(1).nonnegative().default(0),
@@ -226,7 +226,7 @@ export const wpUsers = z.object({
   user_login: z.string().max(60).trim().toLowerCase().default(""),
   user_pass: z.string().max(255).trim().default(""),
   user_nicename: z.string().max(50).trim().default(""),
-  user_email: z.string().email().max(100).trim().default(""),
+  user_email: z.email().max(100).trim().default(""),
   user_url: z.union([
     z.string().max(100).trim().default(""),
     z.string().max(0).optional(),

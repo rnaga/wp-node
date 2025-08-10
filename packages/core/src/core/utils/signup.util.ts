@@ -125,7 +125,7 @@ export class SignupUtil {
       return [false, "Username is not allowed (reserved)"];
     }
 
-    const parsedEmail = z.string().email().min(4).max(60).safeParse(email);
+    const parsedEmail = z.email().min(4).max(60).safeParse(email);
     if (!parsedEmail.success || (await this.siteUtil.isEmailUnsafe(email))) {
       return [false, "Invalid email address (unsafe or format)"];
     }

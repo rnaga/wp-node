@@ -313,7 +313,7 @@ export class SeederTrx extends Trx {
       errors.push(`The network already exists. - ${siteId}`);
     }
 
-    if (!z.string().email().safeParse(email).success) {
+    if (!z.email().safeParse(email).success) {
       errors.push(`You must provide a valid email address. - ${email}`);
     }
 

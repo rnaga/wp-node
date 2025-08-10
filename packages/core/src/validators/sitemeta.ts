@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const sitemeta = z.object({
   site_name: z.string(),
-  admin_email: z.string().email(),
+  admin_email: z.email(),
   admin_user_id: z.number(), // Assuming 'siteUserId' is a number
   registration: z.string(),
   upload_filetypes: z.string(), // Joined string of file types
@@ -29,9 +29,9 @@ export const sitemeta = z.object({
   first_comment: z.string(),
   first_comment_url: z.string(), // Assuming it's a valid URL
   first_comment_author: z.string(),
-  welcome_user_email: z.string().email(), // Assuming it's a valid email
-  limited_email_domains: z.array(z.string().email()), // Assuming it's an array of valid email domains
-  banned_email_domains: z.array(z.string().email()), // Assuming it's an array of valid email domains
-  new_admin_email: z.string().email(), // Assuming it's a valid email
-  first_comment_email: z.string().email(), // Assuming it's a valid email
+  welcome_user_email: z.email(), // Assuming it's a valid email
+  limited_email_domains: z.array(z.email()), // Assuming it's an array of valid email domains
+  banned_email_domains: z.array(z.email()), // Assuming it's an array of valid email domains
+  new_admin_email: z.email(), // Assuming it's a valid email
+  first_comment_email: z.email(), // Assuming it's a valid email
 });

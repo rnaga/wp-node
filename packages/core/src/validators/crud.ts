@@ -150,7 +150,7 @@ export const settings = z.object({
   description: z.string().optional(),
   url: z.string().optional(),
   home: z.string().optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   timezone: z.string().optional(),
   date_format: z.string().optional(),
   time_format: z.string().optional(),
