@@ -109,7 +109,7 @@ export const wpConfig: CliConfig<WPInput, types.JSONWPConfig> = () => {
     // Set up command-line options
     .option("-U, --dbuser <type>", "Enter your database username")
     .option("-P, --dbpassword <type>", "Enter your database password")
-    .option("-p --port <type>", "Enter your database port")
+    .option("-p --dbport <type>", "Enter your database port")
     .option("-D, --dbname <type>", "Enter your database name")
     .option("-H, --dbhost <type>", "Enter your database hostname")
     .option("-m, --multi <type>", "Specify if the site is multi-site (yes/no)")
