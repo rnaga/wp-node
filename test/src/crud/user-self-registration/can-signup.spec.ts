@@ -2,7 +2,7 @@ import Application from "@rnaga/wp-node/application";
 import { UserSelfRegistrationCrud } from "@rnaga/wp-node/crud/user-self-registration.crud";
 import { getTestUsers } from "../../../helpers";
 
-test("getAll", async () => {
+test("canSignup", async () => {
   const context = await Application.getContext("multi");
   const userSelfRegistrationCrud = context.components.get(
     UserSelfRegistrationCrud
@@ -15,7 +15,7 @@ test("getAll", async () => {
   expect(result.data).not.toBe(undefined);
 });
 
-test("getAll single site", async () => {
+test("canSignup single site", async () => {
   const context = await Application.getContext("single");
   const userSelfRegistrationCrud = context.components.get(
     UserSelfRegistrationCrud
