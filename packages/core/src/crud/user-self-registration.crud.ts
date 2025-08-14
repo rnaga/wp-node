@@ -49,6 +49,14 @@ export class UserSelfRegistrationCrud extends Crud {
     }
   }
 
+  async canSignup() {
+    const userSelfRegistrationUtil = this.components.get(
+      UserSelfRegistrationUtil
+    );
+
+    return this.returnValue(await userSelfRegistrationUtil.canSignup());
+  }
+
   async update(
     input: {
       eligibility: boolean;
@@ -165,15 +173,10 @@ export class UserSelfRegistrationCrud extends Crud {
 
     await this.checkEligibility(userSelfRegistrationUtil);
 
-    //try {
     const result = await userSelfRegistrationUtil.activate(
       activationKey,
       userLogin
     );
     return this.returnValue(result);
-    // } catch (e) {
-    //   this.logger.error(String(e));
-    //   throw new CrudError(StatusMessage.BAD_REQUEST, String(e));
-    // }
   }
 }
