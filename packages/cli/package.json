@@ -1,6 +1,6 @@
 {
   "name": "@rnaga/wp-node-cli",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "",
   "bin": {
     "wp-node": "./index.js"
@@ -21,6 +21,7 @@
     "node"
   ],
   "author": "Ryohei Nagatsuka",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^22",
     "copyfiles": "^2.4.1",

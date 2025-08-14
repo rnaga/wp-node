@@ -10,8 +10,6 @@ import * as val from "../validators";
 import { Crud } from "./crud";
 import { CrudError, StatusMessage } from "./error";
 
-//import type * as types from "../types";
-
 // src/wp-admin/options.php
 const allowedOptions = {
   general: [
@@ -79,7 +77,21 @@ const allowedOptions = {
   ] as const,
 };
 
-type AllowedOptions = typeof allowedOptions;
+// Adding user_registration and default_role to the general options
+// to allow them to be managed in the same way as other options.
+// This is only for single site, as multisite has its own user self-registration.
+type AllowedOptions = {
+  general: readonly (
+    | (typeof allowedOptions.general)[number]
+    | "users_can_register"
+    | "default_role"
+  )[];
+  discussion: readonly (typeof allowedOptions.discussion)[number][];
+  media: readonly (typeof allowedOptions.media)[number][];
+  reading: readonly (typeof allowedOptions.reading)[number][];
+  writing: readonly (typeof allowedOptions.writing)[number][];
+};
+
 type AllowedOptionKeys = AllowedOptions[keyof AllowedOptions][number][];
 
 @component()
@@ -119,9 +131,21 @@ export class OptionsCrud extends Crud {
       await context.current.switchBlog(blogId);
     }
 
+    const redefinedAllowedOptions = this.config.isMultiSite()
+      ? allowedOptions
+      : // For single site, we add user_registration and default_role to the general options
+        {
+          ...allowedOptions,
+          general: [
+            ...allowedOptions.general,
+            "users_can_register",
+            "default_role",
+          ],
+        };
+
     const optionNames = key
-      ? allowedOptions[key]
-      : Object.values(allowedOptions).flat(); //this.config.config.options.defaults;
+      ? redefinedAllowedOptions[key]
+      : Object.values(redefinedAllowedOptions).flat();
 
     const data = (
       (await context.utils.query.options((query) => {
