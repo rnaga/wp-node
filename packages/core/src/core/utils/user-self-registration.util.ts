@@ -169,7 +169,9 @@ export class UserSelfRegistrationUtil {
     await this.userTrx.upsertRole(userId, defaultRole);
 
     // Account activated. Generate reset key for user to set password
-    const resetKey = await this.userUtil.getPasswordResetKey(userRef);
+    const resetKey = await this.userUtil.getPasswordResetKey(userRef, {
+      registration: true,
+    });
 
     return [true, resetKey];
   }
