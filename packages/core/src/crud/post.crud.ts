@@ -757,9 +757,6 @@ export class PostCrud extends Crud {
     const posts =
       (await queryUtil.posts((query) => {
         buildQuery(query);
-        if (postTypes.includes("attachment")) {
-          console.log(query.builder.toString());
-        }
       })) ?? [];
 
     const counts = await queryUtil.posts((query) => {
