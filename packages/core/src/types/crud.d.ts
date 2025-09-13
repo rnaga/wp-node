@@ -1,17 +1,18 @@
+import { CrudUtil } from "../core/utils/crud.util";
+import { ApplicationPasswordsCrud } from "../crud/application-passwords.crud";
 import { BlogCrud } from "../crud/blog.crud";
 import { CommentCrud } from "../crud/comment.crud";
+import { Crud } from "../crud/crud";
 import { MetaCrud } from "../crud/meta.crud";
 import { OptionsCrud } from "../crud/options.crud";
 import { PostCrud } from "../crud/post.crud";
-import { SiteCrud } from "../crud/site.crud";
-import { SettingsCrud } from "../crud/settings.crud";
-import { TermCrud } from "../crud/term.crud";
-import { UserCrud } from "../crud/user.crud";
-import { CrudUtil } from "../core/utils/crud.util";
-import { Crud } from "../crud/crud";
 import { RevisionCrud } from "../crud/revision.crud";
 import { RolesCrud } from "../crud/roles.crud";
+import { SettingsCrud } from "../crud/settings.crud";
+import { SiteCrud } from "../crud/site.crud";
+import { TermCrud } from "../crud/term.crud";
 import { UserSelfRegistrationCrud } from "../crud/user-self-registration.crud";
+import { UserCrud } from "../crud/user.crud";
 
 export type ParseError = ReturnType<CrudUtil["parseError"]>;
 
@@ -39,6 +40,7 @@ export type CrudKeys =
 type Context = "view" | "edit" | "embed";
 
 interface CrudComponents {
+  applicationPasswords: ApplicationPasswordsCrud;
   blog: BlogCrud;
   comment: CommentCrud;
   meta: MetaCrud;
@@ -95,6 +97,26 @@ export type BlogParams<T extends BlogOperations> = {
   get: Parameters<BlogCrud["get"]>;
   update: Parameters<BlogCrud["update"]>;
   delete: Parameters<BlogCrud["delete"]>;
+}[T];
+
+export type ApplicationPasswordsOperations = Extract<
+  Operation,
+  "get" | "list" | "update" | "create" | "delete"
+>;
+
+export type ApplicationPasswordsParams<
+  T extends ApplicationPasswordsOperations
+> = {
+  get: Parameters<ApplicationPasswordsCrud["get"]>;
+  update: Parameters<ApplicationPasswordsCrud["update"]>;
+  list: Parameters<ApplicationPasswordsCrud["list"]>;
+  create: Parameters<ApplicationPasswordsCrud["create"]>;
+  delete: Parameters<ApplicationPasswordsCrud["delete"]>;
+}[T];
+
+export type SettingsParams<T extends SettingsOperations> = {
+  get: Parameters<SettingsCrud["get"]>;
+  update: Parameters<SettingsCrud["update"]>;
 }[T];
 
 export type CommentOperations = Operation;
