@@ -78,3 +78,19 @@ test("isLimitedEmailDomains", async () => {
   expect(result1).toBe(true);
   expect(result2).toBe(false);
 });
+
+test("getMainSiteId", async () => {
+  const context = await Application.getContext("multi");
+  const siteUtil = context.components.get(SiteUtil);
+
+  const mainSiteId = await siteUtil.getMainSiteId();
+  expect(mainSiteId).toBe(1);
+});
+
+test("getMainSiteId - single", async () => {
+  const context = await Application.getContext("single");
+  const siteUtil = context.components.get(SiteUtil);
+
+  const mainSiteId = await siteUtil.getMainSiteId();
+  expect(mainSiteId).toBe(1);
+});

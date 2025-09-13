@@ -22,6 +22,7 @@ export const config = z.object({
       .optional()
       .default("info"),
   }),
+  useApplicationPasswords: z.boolean().default(true),
   extensions: z.object({
     misc: z.array(z.string()),
     audio: z.array(z.string()),

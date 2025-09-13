@@ -17,6 +17,7 @@ import { SiteCli } from "./site.cli";
 import { TermCli } from "./term.cli";
 import { UserCli } from "./user.cli";
 import { getChalk } from "./utils";
+import { AppPwdCli } from "./apppwd.cli";
 
 export class Clis {
   static map = new Map<string, Constructor>();
@@ -192,6 +193,7 @@ export class Clis {
 
 // Register default clis
 Clis.register([
+  AppPwdCli,
   BlogCli,
   CommentCli,
   ConfigsCli,

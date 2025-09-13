@@ -1,5 +1,10 @@
 import * as crypto from "crypto";
 import bcryptjs from "bcryptjs";
+import {
+  SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING,
+  sodiumBin2Base64,
+  sodiumCryptoGenerichash,
+} from "./sodium";
 
 export const hashPassword = (plainText: string) => {
   const passwordHash = new PasswordHash(8, true);
@@ -9,6 +14,31 @@ export const hashPassword = (plainText: string) => {
 export const checkPassword = (plainText: string, storedHash: string) => {
   const passwordHash = new PasswordHash(8, true);
   return passwordHash.checkPassword(plainText, storedHash);
+};
+
+export const cleanupPasswordHash = (hash: string) => {
+  // Execute preg_replace( '/[^[a-z\d]i/', '', $hash );
+  return hash.replace(/[^a-z\d]/gi, "");
+};
+
+// wp_fast_hash
+export const fastHash = (message: string): string => {
+  const hashed = sodiumCryptoGenerichash(message, "wp_fast_hash_6.8+", 30);
+  return (
+    "$generic$" +
+    sodiumBin2Base64(hashed, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING)
+  );
+};
+
+// wp_verify_fast_hash
+export const verifyFastHash = (message: string, hash: string): boolean => {
+  if (!hash.startsWith("$generic$")) {
+    return new PasswordHash(8, true).checkPassword(message, hash);
+  }
+
+  const generatedHash = fastHash(message);
+
+  return hash === generatedHash;
 };
 
 export const generatePassword = (

@@ -9,3 +9,5 @@ export * from "./options";
 export * from "./sitemeta";
 
 export * as helpers from "./helpers";
+
+export * from "./application-password";

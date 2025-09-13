@@ -2,6 +2,9 @@ import {
   hashPassword,
   checkPassword,
   generatePassword,
+  fastHash,
+  verifyFastHash,
+  cleanupPasswordHash,
 } from "@rnaga/wp-node/common/password";
 
 test("built-in", async () => {
@@ -67,4 +70,26 @@ test("wordpress-hash-node", async () => {
   const checked = hasher.CheckPassword(password, hash); //This will return true;
 
   console.log(`hash: ${hash} checkPassword: ${checked}`);
+});
+
+test("fastHash & verifyFastHash", () => {
+  // // Test the fastHash function
+  const password = "password";
+  const hash = fastHash(password);
+  expect(hash.startsWith("$generic$")).toBe(true);
+
+  // Test against real WordPress generic hash
+  // Password: UwpK 2DAK fAaz ktEM SOUU fEwG
+  // hash: $generic$4Auw2nZYUc_v7S8AqUzgV294JzOqr-XxKY4dRR-B
+  const realHash = "$generic$4Auw2nZYUc_v7S8AqUzgV294JzOqr-XxKY4dRR-B";
+  const passwordCleanup = cleanupPasswordHash("UwpK 2DAK fAaz ktEM SOUU fEwG");
+  const isValid = verifyFastHash(passwordCleanup, realHash);
+  expect(isValid).toBe(true);
+
+  const isInvalid = verifyFastHash("wrongPassword", realHash);
+  expect(isInvalid).toBe(false);
+
+  // Test that fastHash generates the same hash for the cleaned up password
+  const generatedHash = fastHash(passwordCleanup);
+  expect(generatedHash).toBe(realHash);
 });

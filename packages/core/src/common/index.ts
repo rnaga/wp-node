@@ -8,3 +8,5 @@ export * from "./validating";
 export * from "./config";
 export * as hierarchy from "./hierarchy";
 export * from "./define-hooks";
+export * from "./uuid";
+export * from "./sodium";

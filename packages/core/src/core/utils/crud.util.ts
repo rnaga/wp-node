@@ -14,6 +14,7 @@ import { UserSelfRegistrationCrud } from "../../crud/user-self-registration.crud
 import { UserCrud } from "../../crud/user.crud";
 import { component } from "../../decorators/component";
 import { Components } from "../components";
+import { ApplicationPasswordsCrud } from "../../crud/application-passwords.crud";
 
 @component()
 export class CrudUtil {
@@ -90,5 +91,9 @@ export class CrudUtil {
 
   get userSelfRegistration() {
     return this.components.get(UserSelfRegistrationCrud);
+  }
+
+  get applicationPasswords() {
+    return this.components.get(ApplicationPasswordsCrud);
   }
 }

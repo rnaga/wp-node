@@ -26,6 +26,26 @@ export class SiteUtil {
     return arr;
   }
 
+  // get_main_network_id
+  async getMainSiteId() {
+    if (!this.config.isMultiSite()) {
+      return 1;
+    }
+
+    const current = this.components.get(Current);
+    const siteId = current.siteId;
+    if (siteId === 1) {
+      return 1;
+    }
+
+    const queryUtil = this.components.get(QueryUtil);
+    const sites = await queryUtil.sites((query) => {
+      query.builder.limit(1);
+    });
+
+    return sites?.[0]?.id ?? 1;
+  }
+
   // async getList() {
   //   const queryUtil = this.components.get(QueryUtil);
   //   const metaUtil = this.components.get(MetaUtil);

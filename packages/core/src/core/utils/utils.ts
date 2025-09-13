@@ -15,6 +15,7 @@ import { TaxonomyUtil } from "./taxonomy.util";
 import { TermUtil } from "./term.util";
 import { TrxUtil } from "./trx.util";
 import { UserUtil } from "./user.util";
+import { ApplicationPasswordsUtil } from "./application-passwords.util";
 
 @component()
 export class Utils {
@@ -78,5 +79,9 @@ export class Utils {
 
   get crud() {
     return this.components.get(CrudUtil);
+  }
+
+  get applicationPasswords() {
+    return this.components.get(ApplicationPasswordsUtil);
   }
 }
