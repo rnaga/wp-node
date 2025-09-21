@@ -11,3 +11,4 @@ _wp
 _wp*
 example.ts
 .npmrc
+.vscode

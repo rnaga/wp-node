@@ -63,12 +63,18 @@ export class Clis {
     }
   }
 
-  private static getCommand(version: string, description: string) {
+  private static getCommand(version: string, description: string, clazz: any) {
     const program = new Command();
 
+    program.version(version ?? "NaN").description(description ?? "");
+
+    // If the class has a static method getCommand, call it to get the command
+    if (typeof clazz.getCommand === "function") {
+      clazz.getCommand(program);
+      return program;
+    }
+
     program
-      .version(version ?? "NaN")
-      .description(description ?? "")
       .option(
         "-j --configJson <config>",
         "Enter the json string to be processed"
@@ -167,7 +173,11 @@ export class Clis {
       throw new Error("Subcommand not found");
     }
 
-    const program = Clis.getCommand(clazz.version, value.description ?? "");
+    const program = Clis.getCommand(
+      clazz.version,
+      value.description ?? "",
+      clazz
+    );
 
     // Set the program name to the command and subcommand
     program.name(
