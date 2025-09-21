@@ -64,14 +64,17 @@ export class Clis {
   }
 
   private static getCommand(version: string, description: string, clazz: any) {
-    const program = new Command();
+    let program = new Command();
 
     program.version(version ?? "NaN").description(description ?? "");
 
     // If the class has a static method getCommand, call it to get the command
     if (typeof clazz.getCommand === "function") {
-      clazz.getCommand(program);
-      return program;
+      program = clazz.getCommand(program);
+      if (program instanceof Command) {
+        return program;
+      }
+      throw new Error("clazz.getCommand must return an instance of Command");
     }
 
     program

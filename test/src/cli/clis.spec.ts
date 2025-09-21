@@ -3,7 +3,13 @@ import { Command } from "commander";
 
 test("should call clazz.getCommand when it exists", () => {
   // Mock class with getCommand static method
-  const mockGetCommand = jest.fn();
+  const mockGetCommand = jest.fn((program: Command) => {
+    program
+      .option("-t --testOption", "A test option")
+      .description("A test command");
+    return program;
+  });
+
   const mockClazz = {
     getCommand: mockGetCommand,
   };
@@ -40,8 +46,6 @@ test("should add default options when clazz.getCommand does not exist", () => {
   );
   expect(configJsonOption).toBeDefined();
   expect(configJsonOption.long).toBe("--configJson");
-
-  console.log(result.options);
 });
 
 test("should check typeof clazz.getCommand === 'function' correctly", () => {
@@ -60,14 +64,16 @@ test("should check typeof clazz.getCommand === 'function' correctly", () => {
 
   // All should work without throwing errors
   expect(() =>
-    (Clis as any).getCommand("1.0.0", "Test", mockClazzWithFunction)
-  ).not.toThrow();
-  expect(() =>
     (Clis as any).getCommand("1.0.0", "Test", mockClazzWithNonFunction)
   ).not.toThrow();
   expect(() =>
     (Clis as any).getCommand("1.0.0", "Test", mockClazzWithoutGetCommand)
   ).not.toThrow();
+
+  // This should throw an error
+  expect(() =>
+    (Clis as any).getCommand("1.0.0", "Test", mockClazzWithFunction)
+  ).toThrow();
 
   // Only the function should be called
   expect(mockClazzWithFunction.getCommand).toHaveBeenCalled();
