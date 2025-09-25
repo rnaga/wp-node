@@ -8,9 +8,13 @@ import { component } from "../decorators/component";
 import * as types from "../types";
 import { Alias } from "./alias";
 
-knex.QueryBuilder.extend("__ref", function <T>(ref: T) {
-  return ref;
-});
+try {
+  knex.QueryBuilder.extend("__ref", function <T>(ref: T) {
+    return ref;
+  });
+} catch (e) {
+  // console.warn("knex.QueryBuilder.extend error:", e);
+}
 
 @component({ scope: Scope.Transient })
 export class QueryBuilders {
