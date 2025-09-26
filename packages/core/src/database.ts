@@ -1,35 +1,47 @@
+import { createHash } from "crypto";
 import { Knex } from "knex";
-import { Scope } from "./constants";
-import { Config } from "./config";
-import { component } from "./decorators/component";
-import { DEFAULT_DATABASE_TABLES } from "./constants";
 import moment from "moment";
+
+import { Config } from "./config";
+import { DEFAULT_DATABASE_TABLES } from "./constants";
+import { component } from "./decorators/component";
 
 export type DbConnection = Knex | undefined;
 
-@component({ scope: Scope.Singleton })
+// Multiple Knex instances keyed by connection configuration
+const knexInstances = new Map<string, Knex>();
+
+const generateConnectionKey = (config: any): string => {
+  const connection = config.connection;
+  const connectionString = `${connection.host}:${connection.port}:${connection.database}:${connection.user}`;
+  return createHash("sha256").update(connectionString).digest("hex");
+};
+
+@component()
 export default class Database {
-  static connections: Knex[] = [];
   static perSiteTables = DEFAULT_DATABASE_TABLES.blog;
+  private connectionKey: string;
 
-  #knex: Knex;
   constructor(private config: Config) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.#knex = require("knex")({
-      ...this.config.config.database,
-      connection: {
-        ...this.config.config.database.connection,
-        timezone: "+00:00", // UTC
-        typeCast: (field: any, next: (...args: any) => any) => {
-          if (field.type == "DATETIME") {
-            return moment(field.string()).format("YYYY-MM-DD HH:mm:ss");
-          }
-          return next();
-        },
-      },
-    });
+    this.connectionKey = generateConnectionKey(this.config.config.database);
 
-    Database.connections.push(this.#knex);
+    if (!knexInstances.has(this.connectionKey)) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const knex = require("knex")({
+        ...this.config.config.database,
+        connection: {
+          ...this.config.config.database.connection,
+          timezone: "+00:00", // UTC
+          typeCast: (field: any, next: (...args: any) => any) => {
+            if (field.type == "DATETIME") {
+              return moment(field.string()).format("YYYY-MM-DD HH:mm:ss");
+            }
+            return next();
+          },
+        },
+      });
+      knexInstances.set(this.connectionKey, knex);
+    }
   }
 
   get prefix() {
@@ -41,32 +53,21 @@ export default class Database {
   }
 
   get connection() {
-    return this.#knex;
+    return knexInstances.get(this.connectionKey)!;
   }
 
   get transaction() {
-    return this.#knex.transaction();
+    return knexInstances.get(this.connectionKey)!.transaction();
   }
 
   get schema() {
-    return this.#knex.schema;
-  }
-
-  closeConnection() {
-    for (let i = 0; i < Database.connections.length; i++) {
-      if (Database.connections[i] === this.#knex) {
-        Database.connections.splice(i, 1);
-        break;
-      }
-    }
-    this.#knex.destroy();
+    return knexInstances.get(this.connectionKey)!.schema;
   }
 
   static closeAll() {
-    for (const conn of Database.connections) {
-      conn.destroy();
+    for (const knex of knexInstances.values()) {
+      knex.destroy();
     }
-
-    Database.connections = [];
+    knexInstances.clear();
   }
 }
