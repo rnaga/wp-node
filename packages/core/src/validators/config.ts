@@ -62,6 +62,7 @@ export const config = z.object({
         .string()
         .optional()
         .refine((v) => v && v.length > 0),
+      ssl: z.record(z.string(), z.any()).optional(),
     }),
   }),
   posts: z.object({

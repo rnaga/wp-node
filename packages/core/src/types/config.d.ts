@@ -23,7 +23,9 @@ export type ConfigPostStatusObject = Omit<
   "label" | "_builtin"
 >;
 
-export type JSONWPConfig = DeepPartial<Exclude<Config, "database">> &
+export type DatabaseConfig = Config["database"];
+
+export type JSONWPConfig = DeepPartial<Omit<Config, "database">> &
   Required<{
     staticAssetsPath: Config["staticAssetsPath"];
   }>;

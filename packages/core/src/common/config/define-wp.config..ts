@@ -7,7 +7,7 @@ import * as val from "../../validators";
 export const defineWPConfig = (
   config: Required<{
     staticAssetsPath: types.Config["staticAssetsPath"];
-    database: types.Config["database"];
+    database: types.DatabaseConfig;
   }> &
     Partial<{
       postTypeObject: types.PostTypeObject;
