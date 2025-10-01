@@ -57,7 +57,8 @@ export const jsonToCsv = <T extends object>(data: T[]): string => {
 
 const getFileChoices = (
   input: string,
-  extensions?: string[]
+  extensions?: string[],
+  includeSkip?: boolean
 ): Array<{ name: string; value: string; message: string }> => {
   try {
     // Expand ~ to home directory
@@ -110,9 +111,17 @@ const getFileChoices = (
         return { name: fullPath, value: fullPath, message: display };
       });
 
-    return filtered.length > 0
-      ? filtered
-      : [{ name: ".", value: ".", message: "." }];
+    const choices =
+      filtered.length > 0
+        ? filtered
+        : [{ name: ".", value: ".", message: "." }];
+
+    // Add skip option at the beginning if field is not required
+    if (includeSkip) {
+      choices.unshift({ name: "<skip>", value: "", message: "<skip>" });
+    }
+
+    return choices;
   } catch (err) {
     const fallback = input || ".";
     return [{ name: fallback, value: fallback, message: fallback }];
@@ -139,9 +148,9 @@ export const promptForFilePath = async (
       message,
       limit,
       initial: 0,
-      choices: getFileChoices(currentInput, extensions),
+      choices: getFileChoices(currentInput, extensions, !required),
       suggest(input: string, choices: any[]) {
-        const newChoices = getFileChoices(input, extensions);
+        const newChoices = getFileChoices(input, extensions, !required);
         return newChoices;
       },
     } as any);
@@ -157,9 +166,10 @@ export const promptForFilePath = async (
     autocomplete.submit = async function () {
       const selectedValue = this.focused?.value || this.input;
 
-      // Check if the selected value is a directory
+      // Check if the selected value is a directory (but not <skip>)
       if (
         selectedValue &&
+        this.focused?.name !== "<skip>" &&
         existsSync(selectedValue) &&
         statSync(selectedValue).isDirectory()
       ) {
@@ -167,7 +177,7 @@ export const promptForFilePath = async (
         const trimmedValue = selectedValue.trimEnd() + "/";
         this.input = trimmedValue;
         this.cursor = trimmedValue.length; // Move cursor to end
-        this.choices = getFileChoices(trimmedValue, extensions);
+        this.choices = getFileChoices(trimmedValue, extensions, !required);
         this.index = 0;
         await this.render();
         return;
@@ -178,12 +188,13 @@ export const promptForFilePath = async (
 
     const value = await autocomplete.run();
 
-    if (!value || value.trim() === "") {
+    if (!value || value.trim() === "" || (!required && value === "<skip>")) {
       if (required) {
         console.error(
           `❌ Error: This field is required. Please enter a valid path.`
         );
       } else {
+        filePath = "";
         valid = true;
       }
     } else {
@@ -193,7 +204,7 @@ export const promptForFilePath = async (
         filePath = cleanValue;
         valid = true;
       } else {
-        const skipMessage = required ? "" : " or press Enter to skip";
+        const skipMessage = required ? "" : " or select <skip>";
         console.error(
           `❌ Error: File not found at ${value}. Please enter a valid path${skipMessage}.`
         );
