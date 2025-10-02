@@ -19,7 +19,7 @@ test("insert and remove", async () => {
       post_author: 1,
       post_title: "test attachment",
       post_name: "test attachment",
-      post_categeory: [1, 2, 3],
+      post_category: [1, 2, 3],
       tags_input: ["tag1", "tag2", "tag3", "tag4"],
     },
     {

@@ -14,7 +14,7 @@ export const postUpsert = database.wpPosts
       ID: z.number().nonnegative().optional(),
       import_id: z.number().nonnegative().optional().default(0),
       post_status: z.string().default("draft"),
-      post_categeory: z.array(z.number()).optional(),
+      post_category: z.array(z.number()).optional(),
       comment_status: z.enum(["open", "closed"]).optional().default("open"),
       ping_status: z.enum(["open", "closed"]).default("open"),
       tags_input: z

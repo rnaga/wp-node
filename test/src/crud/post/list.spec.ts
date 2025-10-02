@@ -32,7 +32,7 @@ beforeAll(async () => {
       post_password: "1234",
       post_status: "publish",
       post_content: "<!-- comment -->__content__<!-- comment -->",
-      post_categeory: [1],
+      post_category: [1],
       tags_input: tags?.map((tag) => tag.name),
     });
   } else {
@@ -52,7 +52,7 @@ beforeAll(async () => {
       post_type: "post",
       post_status: "private",
       post_content: "<!-- comment -->__content__<!-- comment -->",
-      post_categeory: [1],
+      post_category: [1],
       tags_input: tags?.map((tag) => tag.name),
       meta_input: {
         meta1: "1234",
@@ -77,7 +77,7 @@ beforeAll(async () => {
       post_status: "inherit",
       post_content: "",
       post_mime_type: "image/jpeg",
-      post_categeory: [1],
+      post_category: [1],
       tags_input: tags?.map((tag) => tag.name),
     });
   } else {

@@ -111,10 +111,10 @@ export class PostCrud extends Crud {
       data.post_password = currentPost.post_password ?? "";
     }
 
-    if (diffData.post_categeory && diffData.post_categeory.length > 0) {
+    if (diffData.post_category && diffData.post_category.length > 0) {
       const category = await this.components.get(TaxonomyUtil).get("category");
       if (!(await user.can(category.props?.capabilities?.assign_terms))) {
-        data.post_categeory = currentPost.post_categeory ?? undefined;
+        data.post_category = currentPost.post_category ?? undefined;
       }
     }
 
@@ -187,7 +187,7 @@ export class PostCrud extends Crud {
       ...getData,
       meta_input: await post.meta.props(),
       tags_input: (await post.terms("post_tag"))?.map((tag) => tag.term_id),
-      post_categeory: (await post.terms("category"))?.map(
+      post_category: (await post.terms("category"))?.map(
         (category) => category.term_id
       ),
     };

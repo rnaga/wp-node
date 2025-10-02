@@ -21,7 +21,7 @@ test("copy", async () => {
       meta_key1: "meta_value1",
       meta_key2: "meta_value2",
     },
-    post_categeory: [1],
+    post_category: [1],
     tags_input: ["tag1", "tag2"],
   });
 

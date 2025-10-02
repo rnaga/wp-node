@@ -127,7 +127,7 @@ export class PostTrx extends Trx {
       // Combine input with existing record
       input = {
         ...(postBefore.props as any),
-        post_categeory: ((await postBefore.terms("category")) ?? []).map(
+        post_category: ((await postBefore.terms("category")) ?? []).map(
           (v) => v.term_id
         ),
         tags_input: ((await postBefore.terms("post_tag")) ?? []).map(
@@ -190,9 +190,9 @@ export class PostTrx extends Trx {
     }
 
     let postCategory: number[] = [];
-    if (Array.isArray(parsedInput.post_categeory)) {
-      postCategory = parsedInput.post_categeory.filter((v) => v > 0);
-    } else if (update && !parsedInput.post_categeory) {
+    if (Array.isArray(parsedInput.post_category)) {
+      postCategory = parsedInput.post_category.filter((v) => v > 0);
+    } else if (update && !parsedInput.post_category) {
       postCategory = !postBefore
         ? []
         : (await postBefore.terms("category"))?.map((term) => term.term_id) ??
@@ -212,7 +212,7 @@ export class PostTrx extends Trx {
       }
     }
 
-    data.post_categeory = postCategory;
+    data.post_category = postCategory;
 
     /*
      * Don't allow contributors to set the post slug for pending review posts.
@@ -425,7 +425,7 @@ export class PostTrx extends Trx {
       !taxonomyCategory.isDefault &&
       taxonomyCategory.props?.objectType == data.post_type
     ) {
-      await this.syncCategories(post.props.ID, data.post_categeory);
+      await this.syncCategories(post.props.ID, data.post_category);
     }
 
     // Sync tags

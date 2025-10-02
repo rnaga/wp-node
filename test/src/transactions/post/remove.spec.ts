@@ -1,11 +1,7 @@
 import Application from "@rnaga/wp-node/application";
 import { currentUnixTimestamp } from "@rnaga/wp-node/common";
 import { QueryUtil } from "@rnaga/wp-node/core/utils/query.util";
-import {
-  CommentTrx,
-  PostTrx,
-  RevisionTrx,
-} from "@rnaga/wp-node/transactions";
+import { CommentTrx, PostTrx, RevisionTrx } from "@rnaga/wp-node/transactions";
 
 test("remove", async () => {
   const context = await Application.getContext("single");
@@ -24,7 +20,7 @@ test("remove", async () => {
     post_name: "test",
     post_content: "____remove__test__",
     post_type: "post",
-    post_categeory: [1, 2, 3, 4],
+    post_category: [1, 2, 3, 4],
     tags_input: ["tag1", "tag2"],
   });
 

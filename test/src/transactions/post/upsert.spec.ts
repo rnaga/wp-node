@@ -14,7 +14,7 @@ test("with input", async () => {
   const input: Partial<z.infer<typeof val.trx.postUpsert>> = {
     post_author: 1,
     post_name: "test",
-    post_categeory: [1, 2, 3],
+    post_category: [1, 2, 3],
   };
 
   const result = val.trx.postUpsert.parse(input);
@@ -34,7 +34,7 @@ test("upsert", async () => {
     post_title: "test title",
     post_name: "test",
     post_type: "post",
-    //post_categeory: categoryIds,
+    //post_category: categoryIds,
     //tags_input: ["tag1", "tag2", "tag3", "tag4"],
     tax_input: {
       custom: ["term1", "term2", "term3"],

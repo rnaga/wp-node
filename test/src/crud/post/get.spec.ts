@@ -29,7 +29,7 @@ beforeAll(async () => {
       post_password: "1234",
       post_status: "publish",
       post_content: "<!-- comment -->__content__<!-- comment -->",
-      post_categeory: [1],
+      post_category: [1],
       tags_input: tags?.map((tag) => tag.name),
     });
   } else {

@@ -29,7 +29,7 @@ test("remove", async () => {
     post_author: 1,
     post_title: `__test_term_remove_${random}__`,
     post_excerpt: "__test__",
-    post_categeory: [termCategory.term_id],
+    post_category: [termCategory.term_id],
   });
 
   // post only has one category, default category should be attched after it gets removed
