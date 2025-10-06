@@ -55,7 +55,7 @@ export class AppPwdCli extends Cli {
     return result.data;
   }
 
-  @subcommand("create", { description: "Create a new term" })
+  @subcommand("create", { description: "Create a new application password" })
   async create(program: Command) {
     program
       .argument("<userRef>", "The user id or user login")
