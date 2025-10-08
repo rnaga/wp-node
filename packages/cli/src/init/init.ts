@@ -54,5 +54,13 @@ export const init = async (input: WPInput) => {
   // Install dependencies
   execSync(`cd ${distDir} && npm install --save-dev @types/node`);
 
+  console.log("Creating .gitignore...");
+
+  // Copy gitignore.example to .gitignore if .gitignore does not exist
+  const gitignorePath = path.resolve(process.cwd(), `${distDir}/.gitignore`);
+  if (!fileExists(gitignorePath)) {
+    copyFile(__dirname + `/templates/gitignore.example`, gitignorePath);
+  }
+
   console.log("Done!");
 };
