@@ -227,7 +227,7 @@ export class MetaCrud extends Crud {
 
   async list(
     table: types.MetaTable,
-    args?: Partial<z.infer<typeof val.crud.termListParams>>,
+    args?: Partial<z.infer<typeof val.crud.metaListParams>>,
     options?: {
       unserialize?: boolean;
     }
