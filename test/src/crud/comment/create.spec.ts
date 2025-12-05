@@ -166,3 +166,66 @@ test("create", async () => {
   const comment2 = await commentUtil.get(result.data);
   expect(comment2.props?.comment_approved).toBe("0");
 });
+
+test("create note", async () => {
+  const context = await Application.getContext("single");
+  const postTrx = context.components.get(PostTrx);
+  const commentCrud = context.components.get(CommentCrud);
+  const commentUtil = context.components.get(CommentUtil);
+
+  const { editor, admin, subscriber } = await getTestUsers(context);
+  await context.current.assumeUser(admin);
+
+  const random = Math.floor(Math.random() * 1000000);
+  const postId = await postTrx.upsert({
+    post_title: `__comment_crud_create_note_${random}`,
+    post_content: `__comment_crud_create_note_${random}`,
+    post_excerpt: `__comment_crud_create_note_${random}`,
+    post_status: "draft",
+  });
+
+  // Admin can create note on draft post
+  const result = await commentCrud.create({
+    comment_content: "note content",
+    comment_post_ID: postId,
+    comment_type: "note",
+  });
+
+  // Check for meta data with no content
+  // (note creation should succeed since meta is provided with valid value)
+  const resultWithMeta = await commentCrud.create({
+    comment_post_ID: postId,
+    comment_type: "note",
+    comment_meta: {
+      _wp_note_status: "resolved",
+    },
+  });
+
+  const commentWithMeta = await commentUtil.get(resultWithMeta.data);
+  const meta = await commentWithMeta.meta.get("_wp_note_status");
+  expect(meta).toBe("resolved");
+
+  // Try invalid meta data
+  await expect(
+    commentCrud.create({
+      comment_post_ID: postId,
+      comment_type: "note",
+      comment_meta: {
+        _wp_note_status: "__invalid_status__",
+      },
+    })
+  ).rejects.toThrow();
+
+  const note = await commentUtil.get(result.data);
+  expect(note.props?.comment_approved).toBe("1");
+
+  // Subscriber cannot create note on draft post
+  await context.current.assumeUser(subscriber);
+  await expect(
+    commentCrud.create({
+      comment_content: "note content",
+      comment_post_ID: postId,
+      comment_type: "note",
+    })
+  ).rejects.toThrow();
+});

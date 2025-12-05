@@ -50,7 +50,15 @@ export class CommentTrx extends Trx {
       };
     }
 
-    const parsedInput = val.trx.commentUpsert.parse(input);
+    // If comment type is "note", it can allow empty content.
+    const parsedInput =
+      input.comment_type === "note"
+        ? val.trx.commentUpsert
+            .extend({
+              comment_content: z.string().optional().default(""),
+            })
+            .parse(input)
+        : val.trx.commentUpsert.parse(input);
     const dateTimeUtil = this.components.get(DateTimeUtil);
     const dateTime = dateTimeUtil.get();
 
@@ -230,7 +238,25 @@ export class CommentTrx extends Trx {
     const EMPTY_TRASH_DAYS = this.config.config.constants.EMPTY_TRASH_DAYS;
 
     if (!EMPTY_TRASH_DAYS) {
-      return await this.remove(commentId, true);
+      const commentUtil = this.components.get(CommentUtil);
+      const comment = await commentUtil.get(commentId);
+      const commentChildren = await comment.children();
+
+      // First remove the comment itself (parent)
+      let success = await this.remove(commentId, true);
+
+      // Check if comment is note type and it's parent comment,
+      // then remove children too (since WP 6.9)
+      if (
+        comment.props?.comment_type === "note" &&
+        0 === comment.props.comment_parent
+      ) {
+        for (const child of commentChildren || []) {
+          success = success && (await this.remove(child.comment_ID, true));
+        }
+      }
+
+      return success;
     }
 
     const queryUtil = this.components.get(QueryUtil);
@@ -261,7 +287,20 @@ export class CommentTrx extends Trx {
       currentUnixTimestamp()
     );
 
-    return true;
+    let success = true;
+
+    // Check if comment is note type and its parent comment
+    if (comment.comment_type === "note" && 0 === comment.comment_parent) {
+      const commentUtil = this.components.get(CommentUtil);
+      const comment = await commentUtil.get(commentId);
+      const commentChildren = await comment.children();
+
+      for (const child of commentChildren || []) {
+        success = success && (await this.trash(child.comment_ID));
+      }
+    }
+
+    return success;
   }
 
   // wp_set_comment_status

@@ -57,6 +57,15 @@ export class CommentsQuery extends QueryBuilder<CommentsQuery> {
       .where(column("comments", "comment_post_ID"), postId)
       .where(column("comments", "comment_approved"), "1")
       .count("* as count");
+
+    this.withoutNote();
+    return this;
+  }
+
+  // Exclude notes (since WP 6.9)
+  withoutNote() {
+    const { column } = this.alias;
+    this.builder.whereNotIn(column("comments", "comment_type"), ["note"]);
     return this;
   }
 

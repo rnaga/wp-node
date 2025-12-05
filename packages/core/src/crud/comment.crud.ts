@@ -213,6 +213,17 @@ export class CommentCrud extends Crud {
 
     const { user } = await this.getUser();
 
+    // If comment type is "note", then only allow users who can "edit_comment"
+    if (
+      comment.props.comment_type === "note" &&
+      !(await user.can("edit_comment", comment.props.comment_ID))
+    ) {
+      throw new CrudError(
+        StatusMessage.UNAUTHORIZED,
+        "Sorry, you are not allowed to read this comment"
+      );
+    }
+
     if (context == "edit" && !(await user.can("moderate_comments"))) {
       throw new CrudError(
         StatusMessage.UNAUTHORIZED,
@@ -252,9 +263,13 @@ export class CommentCrud extends Crud {
     const { user, userId } = await this.getUser();
     const role = await user.role();
 
-    if (!role.is("anonymous") || !user.props) {
+    if (role.is("anonymous") || !user.props) {
       const options = this.components.get(Options);
-      if (await options.get("comment_registration")) {
+      if (
+        (await options.get("comment_registration")) ||
+        // Don't allow anonymous users to create notes (since WP 6.9)
+        data.comment_type === "note"
+      ) {
         throw new CrudError(
           StatusMessage.UNAUTHORIZED,
           "Sorry, you must be logged in to comment"
@@ -299,14 +314,24 @@ export class CommentCrud extends Crud {
       );
     }
 
-    const post = await this.postUtil.get(data.comment_post_ID);
+    const postUtil = this.components.get(PostUtil);
+    const post = await postUtil.get(data.comment_post_ID);
+
+    // Check for notes
+    const isNote = data.comment_type === "note";
+    if (isNote && !(await user.can("edit_post", data.comment_post_ID))) {
+      throw new CrudError(
+        StatusMessage.UNAUTHORIZED,
+        "Sorry, you are not allowed to create a note on this post"
+      );
+    }
 
     if (
       !post.props ||
-      "draft" === post.props.post_status ||
+      (!isNote && "draft" === post.props.post_status) ||
       "trash" === post.props.post_status ||
       !this.canReadPostComment(post) ||
-      !this.commentUtil.isOpen(post)
+      (!this.commentUtil.isOpen(post) && !isNote)
     ) {
       throw new CrudError(
         StatusMessage.UNAUTHORIZED,
@@ -321,11 +346,12 @@ export class CommentCrud extends Crud {
       );
     }
 
-    // Do not allow comments to be created with a non-default type.
+    // Do not allow comments to be created with a non-default type or note.
     if (
       data.comment_type &&
       data.comment_type?.length > 0 &&
-      "comment" !== data.comment_type
+      "comment" !== data.comment_type &&
+      "note" !== data.comment_type
     ) {
       throw new CrudError(
         StatusMessage.BAD_REQUEST,
@@ -333,7 +359,17 @@ export class CommentCrud extends Crud {
       );
     }
 
-    if (!data.comment_content || data.comment_content == "") {
+    // Dont allow empty comment unless "_wp_note_status" meta is set
+    // and comment type is note
+    const noteMetaStatus = data.comment_meta?.["_wp_note_status"];
+    const isNoteMetaAllowed =
+      data.comment_type === "note" &&
+      (noteMetaStatus === "resolved" || noteMetaStatus === "reopen");
+
+    if (
+      !isNoteMetaAllowed &&
+      (!data.comment_content || data.comment_content == "")
+    ) {
       throw new CrudError(StatusMessage.BAD_REQUEST, "Invalid comment content");
     }
 
@@ -373,7 +409,11 @@ export class CommentCrud extends Crud {
       );
     }
 
-    data.comment_approved = await this.commentUtil.getStatus(data);
+    // Don't check for duplicates or flooding for notes.
+    data.comment_approved =
+      "note" === data.comment_type
+        ? "1"
+        : await this.commentUtil.getStatus(data);
 
     const commentTrx = this.components.get(CommentTrx);
     return this.returnValue(await commentTrx.upsert(data));
