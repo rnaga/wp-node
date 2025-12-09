@@ -12,9 +12,6 @@
         "type": "git",
         "url": "git+https://github.com/rnaga/wp-node.git"
     },
-    "publishConfig": {
-        "registry": "https://npm.pkg.github.com"
-    },
     "main": "jest.config.ts",
     "devDependencies": {
         "@types/jest": "^30.0.0",
