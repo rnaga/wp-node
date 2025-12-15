@@ -734,13 +734,20 @@ export class PostCrud extends Crud {
         query.withTerms(taxonomyNames, (query) => {
           query[parsedArgs.tax_relation === "OR" ? "orWhere" : "andWhere"](
             (query) => {
-              if (parsedArgs.categories || parsedArgs.tags) {
+              if (
+                (parsedArgs.categories && parsedArgs.categories.length > 0) ||
+                (parsedArgs.tags && parsedArgs.tags.length > 0)
+              ) {
                 query.whereIn("term_id", [
                   ...(parsedArgs.categories ?? []),
                   ...(parsedArgs.tags ?? []),
                 ]);
               }
-              if (parsedArgs.categories_exclude || parsedArgs.tags_exclude) {
+              if (
+                (parsedArgs.categories_exclude &&
+                  parsedArgs.categories_exclude.length > 0) ||
+                (parsedArgs.tags_exclude && parsedArgs.tags_exclude.length > 0)
+              ) {
                 query.andWhereNot((query) =>
                   query.whereIn("term_id", [
                     ...(parsedArgs.categories_exclude ?? []),
