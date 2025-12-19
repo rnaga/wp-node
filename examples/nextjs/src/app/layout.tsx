@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import "_wp/settings";
-
 import "./globals.css";
 
 const geistSans = Geist({

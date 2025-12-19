@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "_wp/settings";
 import Application from "@rnaga/wp-node/application";
 
 export default async function Home() {
