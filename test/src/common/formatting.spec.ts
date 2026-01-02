@@ -63,6 +63,18 @@ test("slug", async () => {
 
   const r = val.database.wpTerms.shape.slug.safeParse("a b c");
   expect(r.success && r.data == "a-b-c").toEqual(true);
+
+  // Test with newlines
+  expect(formatting.slug("a\nb\nc")).toBe("a-b-c");
+  expect(formatting.slug("\na b c\n")).toBe("a-b-c");
+
+  // Test with tabs
+  expect(formatting.slug("a\tb\tc")).toBe("a-b-c");
+  expect(formatting.slug("\ta b c\t")).toBe("a-b-c");
+
+  // Test with mixed whitespace
+  expect(formatting.slug(" \n\t a b c \t\n ")).toBe("a-b-c");
+  expect(formatting.slug("test\n\tslug")).toBe("test-slug");
 });
 
 test("key", async () => {

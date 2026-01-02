@@ -237,17 +237,19 @@ export class PostTrx extends Trx {
      * Create a valid post name. Drafts and pending posts are allowed to have
      * an empty post name.
      */
-    if (0 >= data.post_name.length) {
+    if (0 >= data.post_name.trim().length) {
       if (!["draft", "pending", "auto-draft"].includes(data.post_status)) {
-        data.post_name =
-          validator.fieldSafe("posts", "post_title", data.post_title) ?? "";
+        data.post_name = formatting.slug(
+          validator.fieldSafe("posts", "post_title", data.post_title) ?? ""
+        );
       } else {
         data.post_name = "";
       }
     } else {
       // New post, or slug has changed.
-      data.post_name =
-        validator.fieldSafe("posts", "post_title", data.post_name) ?? "";
+      data.post_name = formatting.slug(
+        validator.fieldSafe("posts", "post_title", data.post_name) ?? ""
+      );
     }
 
     data.post_modified = data.post_date;

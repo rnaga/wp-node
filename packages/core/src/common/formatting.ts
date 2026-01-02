@@ -159,8 +159,8 @@ export namespace formatting {
 
   export const slug = (v: string) => {
     return unslash(
-      removeAccents(v.trim())
-        .replace(/[\s\t]+/g, "-")
+      removeAccents(v.replace(/[\r\n\t]+/g, " ").trim())
+        .replace(/\s+/g, "-")
         .toLowerCase()
     );
   };

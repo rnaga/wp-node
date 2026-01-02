@@ -4,6 +4,7 @@ import Application from "@rnaga/wp-node/application";
 import { PostTrx } from "@rnaga/wp-node/transactions";
 import * as val from "@rnaga/wp-node/validators";
 import { QueryUtil } from "@rnaga/wp-node/core/utils/query.util";
+import { PostUtil } from "@rnaga/wp-node/core/utils/post.util";
 
 test("defaults", async () => {
   const defaults = val.trx.postUpsert.parse({});
@@ -50,17 +51,54 @@ test("upsert", async () => {
   expect(taxonomyNames).toContain("custom");
 });
 
-// test("transaction", async () => {
-//   const context = await Application.getContext("single");
-//   const database = context.components.get(Database);
+test("slug", async () => {
+  const context = await Application.getContext("single");
+  const queryUtil = context.components.get(QueryUtil);
+  const postUtil = context.components.get(PostUtil);
+  await context.current.assumeUser(1);
 
-//   const trx = await database.transaction;
-//   await trx
-//     .from("wp_posts")
-//     .limit(1)
-//     .then((v) => {
-//       trx.commit();
-//       expect(v[0].ID).toBe(1);
-//     })
-//     .catch(trx.rollback);
-// });
+  const postTrx = context.components.get(PostTrx);
+
+  const postIdWithNoSlug = await postTrx.upsert({
+    post_author: 1,
+    post_title: `Test Slug Title ${Math.floor(Math.random() * 100000)}`,
+    post_type: "post",
+    post_status: "publish",
+  });
+
+  const postWithNoSlug = await postUtil.get(postIdWithNoSlug);
+  expect(postWithNoSlug.props?.post_name).toContain("test-slug-title");
+
+  // slug with space
+  const postIdWithSpacesInSlug = await postTrx.upsert({
+    post_author: 1,
+    post_title: `Test Slug Title ${Math.floor(Math.random() * 100000)}`,
+    post_type: "post",
+    post_status: "publish",
+    post_name: " ",
+  });
+  const postWithSpacesInSlug = await postUtil.get(postIdWithSpacesInSlug);
+  expect(postWithSpacesInSlug.props?.post_name).toContain("test-slug-title");
+
+  // slug with newlines and tabs
+  const postIdWithWhitespace = await postTrx.upsert({
+    post_author: 1,
+    post_title: `Test Slug Title ${Math.floor(Math.random() * 100000)}`,
+    post_type: "post",
+    post_status: "publish",
+    post_name: "\n\ttest-slug\n\t",
+  });
+  const postWithWhitespace = await postUtil.get(postIdWithWhitespace);
+  expect(postWithWhitespace.props?.post_name).toContain("test-slug");
+
+  // slug with only newlines and tabs (should generate slug from title)
+  const postIdWithOnlyWhitespace = await postTrx.upsert({
+    post_author: 1,
+    post_title: `Test Whitespace ${Math.floor(Math.random() * 100000)}`,
+    post_type: "post",
+    post_status: "publish",
+    post_name: "\n\t\n\t",
+  });
+  const postWithOnlyWhitespace = await postUtil.get(postIdWithOnlyWhitespace);
+  expect(postWithOnlyWhitespace.props?.post_name).toContain("test-whitespace");
+});
