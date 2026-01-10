@@ -43,3 +43,20 @@ test("where and withKeys", async () => {
   meta.from.where("__key__", "__value__");
   console.log(builder.toString());
 });
+
+test("withIds", async () => {
+  const context = await Application.getContext("single");
+
+  const builders = context.components.get(QueryBuilders);
+  const builder = builders.queryBuilder;
+  const meta = builders.get(MetaQuery, builder).setPrimaryTable("post");
+
+  meta.from.withIds([1, 2, 100]);
+  console.log(builder.toString());
+
+  const buildersUsers = context.components.get(QueryBuilders);
+  const builderUsers = buildersUsers.queryBuilder;
+  const metaUsers = buildersUsers.get(MetaQuery, builderUsers).setPrimaryTable("user");
+  metaUsers.from.withIds([10, 20, 30]);
+  console.log(builderUsers.toString());
+})

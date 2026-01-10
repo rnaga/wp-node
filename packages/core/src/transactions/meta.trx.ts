@@ -10,13 +10,13 @@ import { Trx } from "./trx";
 import type * as types from "../types";
 type RemoveParams = { key: string; value?: string } & (
   | {
-      objectId: number;
-      deleteAll?: false;
-    }
+    objectId: number;
+    deleteAll?: false;
+  }
   | {
-      deleteAll: true;
-      objectId?: undefined;
-    }
+    deleteAll: true;
+    objectId?: undefined;
+  }
 );
 
 @transactions()
@@ -82,6 +82,26 @@ export class MetaTrx extends Trx {
     const trx = await this.database.transaction;
     try {
       await trx.table(metaTable).whereIn(metaColumn, metaIds).del();
+    } catch (e) {
+      await trx.rollback();
+      throw new Error(`Failed to delete - ${e}`);
+    }
+    await trx.commit();
+    return true;
+  }
+
+  async removeByIds(table: types.MetaTable, objectId: number, metaIds: number[]) {
+    const metaTable = this.tables.get(`${table}meta`);
+
+    const metaColumn = table == "user" ? "umeta_id" : "meta_id";
+
+    const column = formatting.key(`${table}_id`);
+
+    const trx = await this.database.transaction;
+    try {
+      await trx.table(metaTable)
+        .whereIn(column, [objectId])
+        .whereIn(metaColumn, metaIds).del();
     } catch (e) {
       await trx.rollback();
       throw new Error(`Failed to delete - ${e}`);

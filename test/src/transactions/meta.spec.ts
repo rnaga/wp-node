@@ -1,4 +1,5 @@
 import Application from "@rnaga/wp-node/application";
+import { PostUtil } from "@rnaga/wp-node/core/utils/post.util";
 import { QueryUtil } from "@rnaga/wp-node/core/utils/query.util";
 import { MetaTrx } from "@rnaga/wp-node/transactions/meta.trx";
 
@@ -99,6 +100,40 @@ test("remove", async () => {
   });
 
   expect(typeof meta == "undefined").toEqual(true);
+});
+
+test("removeByIds", async () => {
+  const context = await Application.getContext("single");
+  const queryUtil = context.components.get(QueryUtil);
+  const metaTrx = context.components.get(MetaTrx);
+  const postUtil = context.components.get(PostUtil);
+
+  const postId = 1
+  const metaKey = `__meta_remove_byids_test_${Math.floor(Math.random() * 1000)}`;
+  const metaValue = "valuetest";
+
+  // Create a meta to delete
+  await metaTrx.upsert("post", postId, metaKey, metaValue);
+
+  // Get post along with meta_id
+  const post = await postUtil.get(postId);
+  if (!post) {
+    throw new Error("post not found");
+  }
+
+  const meta = await queryUtil.meta("post", (query) => {
+    query.withKeys([metaKey]);
+  });
+
+  const metaIds = meta?.map((m) => m.meta_id) || [];
+
+  await metaTrx.removeByIds("post", postId, metaIds);
+
+  const metaAfter = await queryUtil.meta("post", (query) => {
+    query.withKeys([metaKey]);
+  });
+
+  expect(typeof metaAfter == "undefined").toEqual(true);
 });
 
 test("removeAll", async () => {

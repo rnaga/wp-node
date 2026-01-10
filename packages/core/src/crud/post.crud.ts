@@ -774,18 +774,18 @@ export class PostCrud extends Crud {
     const countGroupBy = (
       includeCountGroupBy
         ? await queryUtil.posts((query) => {
-            buildQuery(query);
-            query
-              .where("post_type", postTypes)
-              .countGroupby("posts", includeCountGroupBy);
-          }, val.query.resultCountGroupBy(includeCountGroupBy))
+          buildQuery(query);
+          query
+            .where("post_type", postTypes)
+            .countGroupby("posts", includeCountGroupBy);
+        }, val.query.resultCountGroupBy(includeCountGroupBy))
         : []
     ) as
       | Array<
-          {
-            [K in TCountGroupBy]: string;
-          } & { count: number }
-        >
+        {
+          [K in TCountGroupBy]: string;
+        } & { count: number }
+      >
       | undefined;
 
     const data = [];
