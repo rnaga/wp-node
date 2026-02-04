@@ -37,20 +37,20 @@ type DataBaseType = {
 
 type DataType<T extends "view" | "edit" | "embed"> = T extends "edit"
   ? DataBaseType &
-      Comment["props"] & {
-        metas: Record<string, any>;
-      }
+  Comment["props"] & {
+    metas: Record<string, any>;
+  }
   : DataBaseType & {
-      comment_ID: number;
-      comment_post_ID: number;
-      comment_author: string;
-      comment_date: string;
-      comment_date_gmt: string;
-      comment_content: string;
-      comment_approved: string;
-      comment_type: string;
-      user_id: number;
-    };
+    comment_ID: number;
+    comment_post_ID: number;
+    comment_author: string;
+    comment_date: string;
+    comment_date_gmt: string;
+    comment_content: string;
+    comment_approved: string;
+    comment_type: string;
+    user_id: number;
+  };
 
 @component()
 export class CommentCrud extends Crud {
@@ -377,15 +377,15 @@ export class CommentCrud extends Crud {
     if (
       user.props &&
       0 >=
-        (
-          [
-            "user_id",
-            "comment_author",
-            "comment_author_email",
-            "comment_author_url",
-          ] as const
-        ).filter((k) => data[k] && (data[k]?.toString() ?? "").length > 0)
-          .length
+      (
+        [
+          "user_id",
+          "comment_author",
+          "comment_author_email",
+          "comment_author_url",
+        ] as const
+      ).filter((k) => data[k] && (data[k]?.toString() ?? "").length > 0)
+        .length
     ) {
       data = {
         ...data,
@@ -619,6 +619,10 @@ export class CommentCrud extends Crud {
 
           case "post":
             query.whereIn("post_ID", value as number[]);
+            break;
+
+          case "post_slug":
+            query.withPostSlugs(value as string[]);
             break;
 
           case "type":

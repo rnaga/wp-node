@@ -140,6 +140,7 @@ export const commentListParams = z.object({
   parent: numberArr.optional(), // array of parent IDs
   parent_exclude: numberArr.optional(), // array of parent IDs
   post: numberArr.optional(), // array of post IDs
+  post_slug: stringArr.optional(), // array of post slugs
   status: z.string().default("approve").optional(),
   type: z.string().default("comment").optional(),
   password: z.string().optional(),

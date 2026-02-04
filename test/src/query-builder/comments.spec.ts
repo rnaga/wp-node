@@ -4,6 +4,30 @@ import {
   QueryBuilders,
 } from "@rnaga/wp-node/query-builder";
 
+test("with posts", async () => {
+  const context = await Application.getContext("single");
+
+  const builders = context.components.get(QueryBuilders);
+  const builder = builders.queryBuilder;
+
+  const comments = builders.get(CommentsQuery, builder);
+
+  comments.from.withPosts([1, 2, 3], "left").select(["ID", "post_ID"]);
+  comments.from.withPostSlugs(["hello-world", "second-post"]);
+
+  console.log(builder.toString());
+
+  const builders2 = context.components.get(QueryBuilders);
+  const builder2 = builders2.queryBuilder;
+
+  const comments2 = builders2.get(CommentsQuery, builder2);
+
+  comments2.from.withPosts([4, 5, 6], "left").select(["ID", "post_ID"]);
+  comments2.from.withPostSlugs(["hello-world"]);
+
+  console.log(builder2.toString());
+});
+
 test("children", async () => {
   const context = await Application.getContext("single");
 

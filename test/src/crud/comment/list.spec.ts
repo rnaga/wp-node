@@ -42,3 +42,20 @@ test("list", async () => {
 
   expect(comments.data.length > 0).toBe(true);
 });
+
+test("list comment with slugs", async () => {
+  const context = await Application.getContext("single");
+  const commentCrud = context.components.get(CommentCrud);
+  const commentTrx = context.components.get(CommentTrx);
+
+  // const { admin, subscriber } = await getTestUsers(context);
+
+  const comments = await commentCrud.list(
+    {
+      post_slug: ["hello-world", "second-post"],
+      per_page: 100,
+    }
+  );
+
+  expect(comments.data.length > 0).toBe(true);
+});

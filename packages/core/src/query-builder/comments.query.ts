@@ -75,13 +75,28 @@ export class CommentsQuery extends QueryBuilder<CommentsQuery> {
     return this;
   }
 
+  #postsJoined = false;
+
+  withPostSlugs(slugs: string[] = [], type: "inner" | "left" = "inner") {
+    const { as, column } = this.alias;
+    this.withPosts([], type)
+    if (slugs.length > 0) {
+      this.builder.whereIn(column("posts", "post_name"), slugs);
+    }
+  }
+
   withPosts(ids: number[] = [], type: "inner" | "left" = "inner") {
     const { as, column } = this.alias;
-    this.builder[type === "inner" ? "innerJoin" : "leftJoin"](
-      as("posts"),
-      column("comments", "comment_post_ID"),
-      column("posts", "ID")
-    );
+
+    if (!this.#postsJoined) {
+      this.builder[type === "inner" ? "innerJoin" : "leftJoin"](
+        as("posts"),
+        column("comments", "comment_post_ID"),
+        column("posts", "ID")
+      );
+      this.#postsJoined = true;
+    }
+
     if (ids.length > 0)
       this.builder.whereIn(column("comments", "comment_post_ID"), ids);
     return this;
@@ -195,15 +210,15 @@ export class CommentsQuery extends QueryBuilder<CommentsQuery> {
     columns:
       | "*"
       | Array<
-          | AllShortColumns
-          | `parent_${AllShortColumns}`
-          | `user_${types.Columns<"users">}`
-          | "user_id"
-          | "meta_key"
-          | "meta_value"
-          | "depth"
-          | "*"
-        >
+        | AllShortColumns
+        | `parent_${AllShortColumns}`
+        | `user_${types.Columns<"users">}`
+        | "user_id"
+        | "meta_key"
+        | "meta_value"
+        | "depth"
+        | "*"
+      >
   ) {
     this.builder.clear("select");
     if (columns === "*") {
