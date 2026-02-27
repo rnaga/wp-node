@@ -18,18 +18,18 @@ import type * as types from "../types";
 
 type DataType<T extends "view" | "edit" | "embed"> = T extends "edit"
   ? Term["props"] & {
-      children: Awaited<ReturnType<Term["children"]>>;
-      metas: Record<string, any>;
-    }
+    children: Awaited<ReturnType<Term["children"]>>;
+    metas: Record<string, any>;
+  }
   : {
-      term_id: number;
-      count: number;
-      description: string;
-      name: string;
-      slug: string;
-      parent: number;
-      taxonomy: types.TaxonomyName;
-    };
+    term_id: number;
+    count: number;
+    description: string;
+    name: string;
+    slug: string;
+    parent: number;
+    taxonomy: types.TaxonomyName;
+  };
 
 @component()
 export class TermCrud extends Crud {
@@ -287,8 +287,8 @@ export class TermCrud extends Crud {
           parsedArgs.orderby == "description"
             ? column("term_taxonomy", parsedArgs.orderby)
             : parsedArgs.orderby == "term_order"
-            ? column("term_relationships", parsedArgs.orderby)
-            : column("terms", parsedArgs.orderby),
+              ? column("term_relationships", parsedArgs.orderby)
+              : column("terms", parsedArgs.orderby),
           parsedArgs.order
         );
       }
@@ -303,8 +303,8 @@ export class TermCrud extends Crud {
         );
       }
 
-      if (parsedArgs.slug) {
-        query.where("slug", parsedArgs.slug);
+      if (Array.isArray(parsedArgs.slug)) {
+        query.whereIn("slug", parsedArgs.slug);
       }
 
       if (parsedArgs.hide_empty) {

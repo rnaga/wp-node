@@ -17,6 +17,7 @@ test("list", async () => {
     "category",
     {
       post: 1,
+      slug: ["uncategorized", "news"],
       orderby: "term_order",
       order: "asc",
     },
