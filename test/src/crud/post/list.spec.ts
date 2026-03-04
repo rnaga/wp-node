@@ -243,3 +243,32 @@ test("list without meta", async () => {
 
   expect(Array.isArray(posts.data)).toBeTruthy();
 });
+
+test("orderby menu_order", async () => {
+  const context = await Application.getContext("single");
+  const postCrud = context.components.get(PostCrud);
+  const postTrx = context.components.get(PostTrx);
+  const { admin } = await getTestUsers(context);
+
+  await context.current.assumeUser(admin);
+
+  const postIds: number[] = [];
+  for (const [i, order] of [[1, 30], [2, 10], [3, 20]] as [number, number][]) {
+    const id = await postTrx.upsert({
+      post_author: admin.props?.ID,
+      post_title: `__crud_post_list_menu_order_${i}__`,
+      post_status: "publish",
+      post_type: "post",
+      menu_order: order,
+    });
+    postIds.push(id);
+  }
+
+  const posts = await postCrud.list(
+    { include: postIds, orderby: "menu_order", order: "asc" },
+    { context: "edit" }
+  );
+
+  const menuOrders = posts.data.map((p) => p.menu_order);
+  expect(menuOrders).toEqual([...menuOrders].sort((a, b) => a - b));
+});

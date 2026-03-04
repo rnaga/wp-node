@@ -32,6 +32,7 @@ export const postListParams = z.object({
       z.literal("post_parent"),
       z.literal("post_name"),
       z.literal("post_title"),
+      z.literal("menu_order"),
     ])
     .default("post_date"),
   slug: stringArr.optional(),
