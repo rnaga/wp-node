@@ -357,7 +357,7 @@ test("swap-menu-order different order", async () => {
     postIds.push(postId);
   }
 
-  // Swap first and second post
+  // Swap first and second post (smaller menu_order first — args order should not matter)
   const result = await postTrx.swapMenuOrder(postIds[0], postIds[1]);
 
   // Get the posts and check menu order
@@ -377,4 +377,252 @@ test("swap-menu-order different order", async () => {
       expect(post.menu_order).toBe(2);
     }
   }
+});
+
+test("update-menu-order postTypes: shifts posts of specified types only", async () => {
+  const context = await Application.getContext("single");
+  const queryUtil = context.components.get(QueryUtil);
+  await context.current.assumeUser(1);
+
+  const postTrx = context.components.get(PostTrx);
+
+  const parentId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test update menu order postTypes parent",
+    post_name: `test-update-menu-order-posttypes-parent-${Math.floor(Math.random() * 10000)}`,
+  });
+
+  // Create a "post" and a "page" both at menu_order 2, under the same parent
+  const postTypePostId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test update menu order postTypes post",
+    post_name: `test-update-menu-order-posttypes-post-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 2,
+  });
+
+  const postTypePageId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test update menu order postTypes page",
+    post_name: `test-update-menu-order-posttypes-page-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "page",
+    menu_order: 2,
+  });
+
+  // Insert a new "post" at menu_order 2 with postTypes: ["post", "page"]
+  // Both the existing "post" and "page" at order 2 should shift to 3
+  const newPostId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test update menu order postTypes new",
+    post_name: `test-update-menu-order-posttypes-new-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 0,
+  });
+
+  await postTrx.updateMenuOrder(newPostId, 2, { postTypes: ["post", "page"] });
+
+  const posts = await queryUtil.posts(query => {
+    query.whereIn("ID", [postTypePostId, postTypePageId, newPostId]);
+  });
+
+  const orderById = Object.fromEntries(posts!.map(p => [p.ID, p.menu_order]));
+
+  expect(orderById[newPostId]).toBe(2);        // inserted at 2
+  expect(orderById[postTypePostId]).toBe(3);   // was 2, shifted (same type as new post)
+  expect(orderById[postTypePageId]).toBe(3);   // was 2, shifted (included via postTypes)
+});
+
+test("update-menu-order postTypes: throws if post type not in postTypes", async () => {
+  const context = await Application.getContext("single");
+  await context.current.assumeUser(1);
+
+  const postTrx = context.components.get(PostTrx);
+
+  const postId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test update menu order invalid postType",
+    post_name: `test-update-menu-order-invalid-posttype-${Math.floor(Math.random() * 10000)}`,
+    post_type: "post",
+    menu_order: 1,
+  });
+
+  // "page" does not include the post's actual type "post" → should throw
+  await expect(
+    postTrx.updateMenuOrder(postId, 2, { postTypes: ["page"] })
+  ).rejects.toThrow();
+});
+
+test("swap-menu-order postTypes: equal order reOrder shifts posts of specified types", async () => {
+  const context = await Application.getContext("single");
+  const queryUtil = context.components.get(QueryUtil);
+  await context.current.assumeUser(1);
+
+  const postTrx = context.components.get(PostTrx);
+
+  const parentId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order postTypes parent",
+    post_name: `test-swap-menu-order-posttypes-parent-${Math.floor(Math.random() * 10000)}`,
+  });
+
+  // Create two "post" posts and one "page" all at menu_order 0 under the same parent
+  const postId1 = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order postTypes post1",
+    post_name: `test-swap-menu-order-posttypes-post1-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 0,
+  });
+
+  const postId2 = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order postTypes post2",
+    post_name: `test-swap-menu-order-posttypes-post2-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 0,
+  });
+
+  const pageId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order postTypes page",
+    post_name: `test-swap-menu-order-posttypes-page-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "page",
+    menu_order: 0,
+  });
+
+  // Swap two equal-order "post" posts with postTypes: ["post", "page"]
+  // reOrderOnEqual=true (default): post1 stays at 0; post2 and the "page" sibling (both >= 0, not post1) shift to 1
+  await postTrx.swapMenuOrder(postId1, postId2, { postTypes: ["post", "page"] });
+
+  const posts = await queryUtil.posts(query => {
+    query.whereIn("ID", [postId1, postId2, pageId]);
+  });
+
+  const orderById = Object.fromEntries(posts!.map(p => [p.ID, p.menu_order]));
+
+  expect(orderById[postId1]).toBe(0); // stays at 0
+  expect(orderById[postId2]).toBe(1); // bumped to 1
+  expect(orderById[pageId]).toBe(1);  // also bumped — included via postTypes
+});
+
+test("swap-menu-order postTypes: swap posts of different types", async () => {
+  const context = await Application.getContext("single");
+  const queryUtil = context.components.get(QueryUtil);
+  await context.current.assumeUser(1);
+
+  const postTrx = context.components.get(PostTrx);
+
+  const parentId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order diff-types parent",
+    post_name: `test-swap-menu-order-diff-types-parent-${Math.floor(Math.random() * 10000)}`,
+  });
+
+  // A "post" at order 1 and a "page" at order 2 — different types, different orders
+  const postTypePostId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order diff-types post",
+    post_name: `test-swap-menu-order-diff-types-post-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 1,
+  });
+
+  const postTypePageId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order diff-types page",
+    post_name: `test-swap-menu-order-diff-types-page-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "page",
+    menu_order: 2,
+  });
+
+  // Swapping posts of different types is allowed when both types are in postTypes
+  await postTrx.swapMenuOrder(postTypePostId, postTypePageId, { postTypes: ["post", "page"] });
+
+  const posts = await queryUtil.posts(query => {
+    query.whereIn("ID", [postTypePostId, postTypePageId]);
+  });
+
+  const orderById = Object.fromEntries(posts!.map(p => [p.ID, p.menu_order]));
+
+  expect(orderById[postTypePostId]).toBe(2); // was 1, swapped with page
+  expect(orderById[postTypePageId]).toBe(1); // was 2, swapped with post
+});
+
+test("swap-menu-order postTypes: throws if post type not in postTypes", async () => {
+  const context = await Application.getContext("single");
+  await context.current.assumeUser(1);
+
+  const postTrx = context.components.get(PostTrx);
+
+  const parentId = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order invalid postType parent",
+    post_name: `test-swap-menu-order-invalid-posttype-parent-${Math.floor(Math.random() * 10000)}`,
+  });
+
+  const postId1 = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order invalid postType 1",
+    post_name: `test-swap-menu-order-invalid-posttype-1-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 1,
+  });
+
+  const postId2 = await postTrx.upsert({
+    post_author: 1,
+    post_title: "test swap menu order invalid postType 2",
+    post_name: `test-swap-menu-order-invalid-posttype-2-${Math.floor(Math.random() * 10000)}`,
+    post_parent: parentId,
+    post_type: "post",
+    menu_order: 2,
+  });
+
+  // "page" does not include the posts' actual type "post" → should throw
+  await expect(
+    postTrx.swapMenuOrder(postId1, postId2, { postTypes: ["page"] })
+  ).rejects.toThrow();
+});
+
+test("swap-menu-order different order (args reversed: larger menu_order first)", async () => {
+  const context = await Application.getContext("single");
+  const queryUtil = context.components.get(QueryUtil);
+  await context.current.assumeUser(1);
+
+  const postTrx = context.components.get(PostTrx);
+  let postIds: number[] = [];
+
+  // Create 3 posts with menu order 0, 1, 2
+  for (let i = 0; i < 3; i++) {
+    const postName = `test-swap-menu-order-reversed-${Math.floor(Math.random() * 10000)}`;
+    const postId = await postTrx.upsert({
+      post_author: 1,
+      post_title: `test title swap menu order reversed ${i}`,
+      post_name: postName,
+      menu_order: i,
+    });
+
+    postIds.push(postId);
+  }
+
+  // Pass larger-order post as postId1 — internally swapped so result is identical
+  await postTrx.swapMenuOrder(postIds[1], postIds[0]);
+
+  const posts = await queryUtil.posts(query => {
+    query.whereIn("ID", postIds);
+  });
+
+  const orderById = Object.fromEntries(posts!.map(p => [p.ID, p.menu_order]));
+
+  expect(orderById[postIds[0]]).toBe(1); // was 0, swapped with postIds[1]
+  expect(orderById[postIds[1]]).toBe(0); // was 1, swapped with postIds[0]
+  expect(orderById[postIds[2]]).toBe(2); // unchanged
 });

@@ -195,8 +195,8 @@ export class PostTrx extends Trx {
     } else if (update && !parsedInput.post_category) {
       postCategory = !postBefore
         ? []
-        : (await postBefore.terms("category"))?.map((term) => term.term_id) ??
-        [];
+        : ((await postBefore.terms("category"))?.map((term) => term.term_id) ??
+          []);
     }
 
     // Make sure we set a valid category.
@@ -281,7 +281,7 @@ export class PostTrx extends Trx {
     data.post_author =
       parsedInput.post_author > 0
         ? parsedInput.post_author
-        : current.user?.props?.ID ?? -1;
+        : (current.user?.props?.ID ?? -1);
 
     data.ping_status =
       parsedInput.ping_status ??
@@ -702,13 +702,13 @@ export class PostTrx extends Trx {
     postId: number,
     args:
       | {
-        data: Record<string, any>;
-        remove?: never;
-      }
+          data: Record<string, any>;
+          remove?: never;
+        }
       | {
-        data?: never;
-        remove: true;
-      }
+          data?: never;
+          remove: true;
+        }
   ) {
     const { data, remove = false } = args;
     const metaTrx = this.components.get(MetaTrx);
@@ -1142,15 +1142,27 @@ export class PostTrx extends Trx {
   //   to fill the vacated slot.
   // - No collision and no forward move: only the post itself is updated.
   // checkParent=true (default) scopes all sibling queries to posts with the same post_parent.
-  async updateMenuOrder(postId: number, menuOrder: number, options?: {
-    checkParent?: boolean
-    reOrder?: boolean
-  }) {
-    const { checkParent = true, reOrder = true } = options ?? {}
+  async updateMenuOrder(
+    postId: number,
+    menuOrder: number,
+    options?: {
+      checkParent?: boolean;
+      reOrder?: boolean;
+      postTypes?: string[];
+    }
+  ) {
+    const { checkParent = true, reOrder = true } = options ?? {};
 
     const post = await this.postUtil.get(postId);
     if (!post.props) {
       throw new Error(`Post not found - ${postId}`);
+    }
+
+    const postTypes = options?.postTypes ?? [post.props.post_type];
+    if (!postTypes.includes(post.props.post_type)) {
+      throw new Error(
+        `Post type of the post should be in ${postTypes.join(", ")} - ${postId}`
+      );
     }
 
     if (!reOrder) {
@@ -1177,7 +1189,7 @@ export class PostTrx extends Trx {
       try {
         const query = trx
           .table(this.tables.get("posts"))
-          .where("post_type", post.props.post_type)
+          .whereIn("post_type", postTypes)
           .where("menu_order", ">", oldMenuOrder)
           .where("menu_order", "<", menuOrder)
           .whereNot("ID", postId);
@@ -1189,7 +1201,9 @@ export class PostTrx extends Trx {
         await query.update({ menu_order: trx.raw("?? - 1", ["menu_order"]) });
       } catch (e) {
         await trx.rollback();
-        throw new Error(`Failed to decrement menu_order for post ${postId} - ${e}`);
+        throw new Error(
+          `Failed to decrement menu_order for post ${postId} - ${e}`
+        );
       }
       await trx.commit();
     }
@@ -1200,7 +1214,7 @@ export class PostTrx extends Trx {
     const queryUtil = this.components.get(QueryUtil);
     const collisionPosts = await queryUtil.posts((query) => {
       query
-        .where("post_type", post.props!.post_type)
+        .whereIn("post_type", postTypes)
         .where("menu_order", menuOrder)
         .where("ID", postId, "!=");
 
@@ -1215,7 +1229,7 @@ export class PostTrx extends Trx {
       try {
         const query = trx
           .table(this.tables.get("posts"))
-          .where("post_type", post.props.post_type)
+          .whereIn("post_type", postTypes)
           .where("menu_order", ">=", menuOrder)
           .whereNot("ID", postId);
 
@@ -1230,7 +1244,9 @@ export class PostTrx extends Trx {
         await query.update({ menu_order: trx.raw("?? + 1", ["menu_order"]) });
       } catch (e) {
         await trx.rollback();
-        throw new Error(`Failed to increment menu_order for post ${postId} - ${e}`);
+        throw new Error(
+          `Failed to increment menu_order for post ${postId} - ${e}`
+        );
       }
       await trx.commit();
     }
@@ -1251,48 +1267,64 @@ export class PostTrx extends Trx {
     return true;
   }
 
-  // Note: menu order of post1 should be smaller than or equal to post2 before swapping, otherwise throws.
+  // Note: post1 and post2 are compared and the smaller menu_order is assigned to post1.
   // Performance note: not suitable for high-frequency or bulk use.
   // - Fetches both posts individually before writing (2 extra DB reads per call).
   // - Uses 2 separate transactions instead of one, creating a TOCTOU window
   //   where concurrent writes between the reads and updates can cause inconsistency.
-  async swapMenuOrder(postId1: number, postId2: number, options?: {
-    reOrderOnEqual?: boolean
-    checkParent?: boolean
-  }) {
-    const { reOrderOnEqual = true, checkParent = true } = options ?? {}
+  async swapMenuOrder(
+    postId1: number,
+    postId2: number,
+    options?: {
+      reOrderOnEqual?: boolean;
+      checkParent?: boolean;
+      postTypes?: string[];
+    }
+  ) {
+    const { reOrderOnEqual = true, checkParent = true } = options ?? {};
 
-    const post1 = await this.postUtil.get(postId1);
-    const post2 = await this.postUtil.get(postId2);
+    let post1 = await this.postUtil.get(postId1);
+    let post2 = await this.postUtil.get(postId2);
 
     if (!post1.props || !post2.props) {
       throw new Error(`Posts not found - ${postId1}, ${postId2}`);
     }
 
-    if (post1.props.post_type !== post2.props.post_type) {
-      throw new Error(`Posts should have the same post type - ${postId1}, ${postId2}`);
+    const postTypes =
+      options?.postTypes ??
+      Array.from(new Set([post1.props.post_type, post2.props.post_type]));
+    if (
+      !postTypes.includes(post1.props.post_type) ||
+      !postTypes.includes(post2.props.post_type)
+    ) {
+      throw new Error(
+        `Post types of both posts should be in [${postTypes.join(", ")}] - ${postId1}, ${postId2}`
+      );
     }
 
     if (checkParent && post1.props.post_parent !== post2.props.post_parent) {
-      throw new Error(`Posts should have the same parent - ${postId1}, ${postId2}`);
+      throw new Error(
+        `Posts should have the same parent - ${postId1}, ${postId2}`
+      );
     }
 
+    // Compare menu order and set menuOrder1 as smaller one.
     if (post1.props.menu_order > post2.props.menu_order) {
-      throw new Error(`Menu order of post ${postId1} should be smaller than post ${postId2} before swapping`);
+      // Swap post1 and post2 to make sure menu order of post1 is smaller than or equal to post2.
+      [post1, post2] = [post2, post1];
+      // Swap postId1 and postId2 to keep consistent with post1 and post2 after swap.
+      [postId1, postId2] = [postId2, postId1];
     }
 
-    const menuOrder1 = post1.props.menu_order;
-    const menuOrder2 = post2.props.menu_order;
+    const menuOrder1 = post1!.props!.menu_order;
+    const menuOrder2 = post2!.props!.menu_order;
 
     // Update menu order of post1.
     let trx = await this.database.transaction;
     try {
-      await trx
-        .table(this.tables.get("posts"))
-        .where("ID", postId1)
-        .update({
-          menu_order: menuOrder2,
-        });
+      await trx.table(this.tables.get("posts")).where("ID", postId1).update({
+        menu_order: menuOrder2,
+      });
     } catch (e) {
       await trx.rollback();
       throw new Error(`Failed to update menu order of post ${postId1} - ${e}`);
@@ -1300,22 +1332,18 @@ export class PostTrx extends Trx {
     await trx.commit();
 
     // Update menu order of post2.
-    // If menu order of post1 and post2 are the same or true on reOrderOnEqual.
-    // 1. menu order of post2 should be increased by 1.
-    // 2. then the rest of posts with the same parent_post and menu order that's same or larger than menu order of post2 (&post1) should be increased by 1
+    // If the orders differ, or reOrderOnEqual is false, perform a plain swap: give post2 post1's old order.
     if (!reOrderOnEqual || menuOrder1 !== menuOrder2) {
-      // If menu order of post1 and post2 are different, just swap them.
       const trx = await this.database.transaction;
       try {
-        await trx
-          .table(this.tables.get("posts"))
-          .where("ID", postId2)
-          .update({
-            menu_order: menuOrder1,
-          });
+        await trx.table(this.tables.get("posts")).where("ID", postId2).update({
+          menu_order: menuOrder1,
+        });
       } catch (e) {
         await trx.rollback();
-        throw new Error(`Failed to update menu order of post ${postId2} - ${e}`);
+        throw new Error(
+          `Failed to update menu order of post ${postId2} - ${e}`
+        );
       }
       await trx.commit();
       return true;
@@ -1328,12 +1356,12 @@ export class PostTrx extends Trx {
     try {
       const query = trxRest
         .table(this.tables.get("posts"))
-        .where("post_type", post1.props.post_type)
         .where("menu_order", ">=", menuOrder2)
-        .whereNot("ID", postId1);
+        .whereNot("ID", postId1)
+        .whereIn("post_type", postTypes);
 
       if (checkParent) {
-        query.where("post_parent", post1.props.post_parent);
+        query.where("post_parent", post1.props!.post_parent);
       }
 
       await query.update({
@@ -1341,7 +1369,9 @@ export class PostTrx extends Trx {
       });
     } catch (e) {
       await trxRest.rollback();
-      throw new Error(`Failed to update menu order of posts with the same parent and menu order that's same or larger than menu order of post ${postId2} - ${e}`);
+      throw new Error(
+        `Failed to update menu order of posts with the same parent and menu order that's same or larger than menu order of post ${postId2} - ${e}`
+      );
     }
     await trxRest.commit();
 
