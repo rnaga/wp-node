@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDirs": ["./", "../../src"],
     "noEmit": true,
+    "types": ["jest", "node"],
     "paths": {
       "@rnaga/wp-node/*": ["../packages/core/src/*"],
       "@rnaga/wp-node-cli/*": ["../packages/cli/src/*"],

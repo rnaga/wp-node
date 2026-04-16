@@ -284,7 +284,13 @@ export class PostCrud extends Crud {
   }
 
   // edit_post
-  async update(postId: number, data: Partial<PostUpsert>) {
+  async update(
+    postId: number,
+    data: Partial<PostUpsert>,
+    options?: {
+      skipUnslashFields?: (keyof PostUpsert)[];
+    }
+  ) {
     data.ID = postId;
     const currentPost = (await this.getAsUpsert(postId, { context: "edit" }))
       .data;
@@ -302,7 +308,7 @@ export class PostCrud extends Crud {
     }
 
     const postTrx = this.components.get(PostTrx);
-    const result = await postTrx.upsert(data);
+    const result = await postTrx.upsert(data, options);
 
     const postUtil = this.components.get(PostUtil);
     const postType = postUtil.getTypeObject(data.post_type);
@@ -319,7 +325,12 @@ export class PostCrud extends Crud {
   }
 
   // wp_write_post
-  async create(data: Partial<PostUpsert>) {
+  async create(
+    data: Partial<PostUpsert>,
+    options?: {
+      skipUnslashFields?: (keyof PostUpsert)[];
+    }
+  ) {
     if (!data.post_type || !(await this.canEditPosts(data.post_type))) {
       throw new CrudError(
         StatusMessage.UNAUTHORIZED,
@@ -332,14 +343,14 @@ export class PostCrud extends Crud {
     }
 
     if (data.ID && data.ID > 0) {
-      return await this.update(data.ID, val.trx.postUpsert.parse(data));
+      return await this.update(data.ID, val.trx.postUpsert.parse(data), options);
     }
 
     data.ID = undefined;
     data = await this.translate(data);
 
     const postTrx = this.components.get(PostTrx);
-    return this.returnValue(await postTrx.upsert(data));
+    return this.returnValue(await postTrx.upsert(data, options));
   }
 
   async delete(postId: number) {

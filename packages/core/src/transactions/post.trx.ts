@@ -98,7 +98,14 @@ export class PostTrx extends Trx {
   }
 
   // wp_insert_post
-  async upsert(input: Partial<DataUpsert>) {
+  async upsert(
+    input: Partial<DataUpsert>,
+    upsertOptions?: {
+      // Fields listed here are written to the DB as-is, bypassing formatting.unslash().
+      // Use for fields that store structured data (e.g. JSON) where backslashes are meaningful.
+      skipUnslashFields?: (keyof DataUpsert)[];
+    }
+  ) {
     const current = this.components.get(Current);
     const options = this.components.get(Options);
     const dateTimeUtil = this.components.get(DateTimeUtil);
@@ -351,12 +358,16 @@ export class PostTrx extends Trx {
 
     let dataUpsert: any = {};
 
+    // Fields in skipUnslash are written verbatim — formatting.unslash() is intentionally skipped
+    // for fields like post_content that store structured JSON where backslashes are meaningful.
+    const skipUnslash = new Set<string>(upsertOptions?.skipUnslashFields ?? []);
+
     try {
       dataUpsert = validator.execAny(
         update ? val.trx.postUpdate : val.trx.postInsert,
         Object.entries(data)
           .map(([key, value]) => ({
-            [key]: formatting.unslash(value),
+            [key]: skipUnslash.has(key) ? value : formatting.unslash(value),
           }))
           .reduce((obj, item) => ({ ...obj, ...item }), {})
       );

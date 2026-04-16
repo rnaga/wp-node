@@ -10,7 +10,10 @@ import type * as types from "../../types";
 
 @component()
 export class BlogUtil {
-  constructor(private components: Components, private config: Config) {}
+  constructor(
+    private components: Components,
+    private config: Config
+  ) {}
 
   async get(blogRef: string | number) {
     return await this.components.asyncGet(Blog, [blogRef]);
@@ -51,5 +54,19 @@ export class BlogUtil {
     }, val.database.wpSiteMeta);
 
     return parseInt(siteMeta?.meta_value ?? "1");
+  }
+
+  // get_blog_id_from_url
+  async getBlogFromUrl(domain: string, path: string) {
+    if (!this.config.isMultiSite()) {
+      return undefined;
+    }
+
+    const queryUtil = this.components.get(QueryUtil);
+    const blogs = await queryUtil.blogs((query) => {
+      query.where("domain", domain).where("path", path);
+    });
+
+    return blogs && blogs.length > 0 ? blogs[0] : undefined;
   }
 }
