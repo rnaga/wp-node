@@ -118,9 +118,12 @@ export class MetaTrx extends Trx {
     args?: {
       unique?: boolean;
       serialize?: boolean;
+      // When true, the value is written verbatim — formatting.unslash() is skipped.
+      // Use for values that store structured data (e.g. JSON) where backslashes are meaningful.
+      skipUnslash?: boolean;
     }
   ) {
-    const { unique = true, serialize = false } = args || {};
+    const { unique = true, serialize = false, skipUnslash = false } = args || {};
 
     const queryUtil = this.components.get(QueryUtil);
 
@@ -135,7 +138,7 @@ export class MetaTrx extends Trx {
       value = true === value ? "1" : "0";
     } else if (typeof value == "undefined") {
       value = "";
-    } else {
+    } else if (!skipUnslash) {
       value = formatting.unslash(value);
     }
 
