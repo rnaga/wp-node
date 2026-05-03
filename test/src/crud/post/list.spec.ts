@@ -4,7 +4,7 @@ import { PostCrud } from "@rnaga/wp-node/crud/post.crud";
 import { OptionsTrx, PostTrx } from "@rnaga/wp-node/transactions";
 import { getTestUsers } from "../../../helpers";
 
-const postTitle = "__crud_post_list__";
+const postTitle = "__crud_post_list_1234__";
 let postId = 0;
 let privatePostId = 0;
 let mimeTypePostId = 0;
@@ -36,7 +36,19 @@ beforeAll(async () => {
       tags_input: tags?.map((tag) => tag.name),
     });
   } else {
-    postId = posts[0].ID;
+    //postId = posts[0].ID;
+
+    postId = await postTrx.upsert({
+      ID: posts[0].ID,
+      post_author: admin.props?.ID,
+      post_title: postTitle,
+      post_type: "post",
+      post_password: "1234",
+      post_status: "publish",
+      post_content: "<!-- comment -->__content__<!-- comment -->",
+      post_category: [1],
+      tags_input: tags?.map((tag) => tag.name),
+    });
   }
 
   tags?.map((tag) => tagIds.push(tag.term_id));
@@ -253,7 +265,11 @@ test("orderby menu_order", async () => {
   await context.current.assumeUser(admin);
 
   const postIds: number[] = [];
-  for (const [i, order] of [[1, 30], [2, 10], [3, 20]] as [number, number][]) {
+  for (const [i, order] of [
+    [1, 30],
+    [2, 10],
+    [3, 20],
+  ] as [number, number][]) {
     const id = await postTrx.upsert({
       post_author: admin.props?.ID,
       post_title: `__crud_post_list_menu_order_${i}__`,

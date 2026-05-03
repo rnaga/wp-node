@@ -65,19 +65,16 @@ export class BlogsQuery extends QueryBuilder<BlogsQuery> {
     op: string = "="
   ) {
     const { column: toColumn } = this.alias;
+    const col =
+      column === "meta_key" || column === "meta_value"
+        ? toColumn("blogmeta", column as types.Columns<"blogmeta">)
+        : toColumn("blogs", column);
+
     if (Array.isArray(value)) {
-      op = "in";
+      this.builder.whereIn(col, value);
+    } else {
+      this.builder.where(col, op, value);
     }
-    this.builder.where(
-      toColumn(
-        (column == "meta_key" || column == "meta_value"
-          ? "blogmeta"
-          : "blogs") as any,
-        column
-      ),
-      op,
-      value
-    );
     return this;
   }
 

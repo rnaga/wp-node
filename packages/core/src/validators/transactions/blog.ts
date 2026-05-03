@@ -15,9 +15,9 @@ export const blogUpsert = z.union([
   blogUpsertBase.partial().merge(
     z.object({
       blog_id: z.number().int().nonnegative(),
-      title: z.undefined(),
-      options: z.undefined(),
-      user_id: z.undefined(),
+      title: z.undefined().optional(),
+      options: z.undefined().optional(),
+      user_id: z.undefined().optional(),
     })
   ),
   blogUpsertBase.partial().merge(
@@ -28,7 +28,7 @@ export const blogUpsert = z.union([
         z.record(z.string(), z.any()).optional(),
         z.undefined(),
       ]),
-      blog_id: z.undefined(),
+      blog_id: z.undefined().optional(),
     })
   ),
 ]);

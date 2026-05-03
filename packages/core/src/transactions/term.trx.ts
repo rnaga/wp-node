@@ -414,14 +414,17 @@ export class TermTrx extends Trx {
     const queryUtil = this.components.get(QueryUtil);
 
     // If there are no shared term_taxonomy rows, there's nothing to do here.
-    const sharedCount = (await queryUtil.terms((query) => {
-      query.selectTermTaxonomy
-        .where("term_id", termId)
-        .builder.not.__ref(query)
-        .where("term_taxonomy_id", termTaxonomyId)
-        .builder.clear("select")
-        .count("* as count");
-    }, z.array(z.object({ count: z.number() })))) ?? [{ count: 0 }];
+    const sharedCount = (await queryUtil.terms(
+      (query) => {
+        query.selectTermTaxonomy
+          .where("term_id", termId)
+          .builder.not.__ref(query)
+          .where("term_taxonomy_id", termTaxonomyId)
+          .builder.clear("select")
+          .count("* as count");
+      },
+      z.array(z.object({ count: z.number() }))
+    )) ?? [{ count: 0 }];
 
     if (0 >= sharedCount[0]["count"]) {
       return termId;

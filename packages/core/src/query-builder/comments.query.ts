@@ -316,21 +316,21 @@ export class CommentsQuery extends QueryBuilder<CommentsQuery> {
     op: string = "="
   ) {
     const { column: toColumn } = this.alias;
+    const col =
+      column === "meta_key" || column === "meta_value"
+        ? toColumn("commentmeta", column as types.Columns<"commentmeta">)
+        : toColumn(
+            "comments",
+            (column === "user_id"
+              ? column
+              : `comment_${column}`) as types.Columns<"comments">
+          );
+
     if (Array.isArray(value)) {
-      op = "in";
+      this.builder.whereIn(col, value);
+    } else {
+      this.builder.where(col, op, value);
     }
-    this.builder.where(
-      toColumn(
-        (column == "meta_key" || column == "meta_value"
-          ? "meta"
-          : "comments") as any,
-        column === "user_id" || column == "meta_key" || column == "meta_value"
-          ? column
-          : `comment_${column}`
-      ),
-      op,
-      value
-    );
     return this;
   }
 }

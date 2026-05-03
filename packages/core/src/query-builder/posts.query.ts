@@ -40,9 +40,8 @@ export class PostsQuery extends QueryBuilder<PostsQuery> {
     const { column } = this.alias;
 
     this.andWhere((query) => {
-      query.builder.where(
+      query.builder.whereNotIn(
         column("posts", "ID"),
-        "not in",
         (qb: Knex.QueryBuilder) => {
           const meta = this.builders.get(MetaQuery, qb);
           meta
@@ -134,19 +133,16 @@ export class PostsQuery extends QueryBuilder<PostsQuery> {
     op: string = "="
   ) {
     const { column: toColumn } = this.alias;
+    const col =
+      column === "meta_key" || column === "meta_value"
+        ? toColumn("postmeta", column as types.Columns<"postmeta">)
+        : toColumn("posts", column);
+
     if (Array.isArray(value)) {
-      op = "in";
+      this.builder.whereIn(col, value);
+    } else {
+      this.builder.where(col, op, value);
     }
-    this.builder.where(
-      toColumn(
-        (column == "meta_key" || column == "meta_value"
-          ? "postmeta"
-          : "posts") as any,
-        column
-      ),
-      op,
-      value
-    );
 
     return this;
   }

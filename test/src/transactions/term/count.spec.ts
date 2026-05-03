@@ -15,48 +15,43 @@ test("update post count", async () => {
   const taxonomyUtil = context.components.get(TaxonomyUtil);
   const database = context.components.get(Database);
 
-  const taxonomy = await taxonomyUtil.get("category");
+  const taxonomyName = "category";
+  const taxonomy = await taxonomyUtil.get(taxonomyName);
   const postId = 1;
 
-  // Get term_taxonomy_id not tied to post_id = 1
-  const notTermTaxonomyIds: number[] = [];
+  // Create a fresh term to avoid duplicate key errors on term_relationships
+  const termName = `__test_update_post_count_${Math.floor(Math.random() * 1000000)}`;
+  let termId = 0;
+  let termTaxonomyId = 0;
 
-  (
-    (await queryUtil.terms((query) => {
-      query.withObjectIds([postId]).where("taxonomy", taxonomy.name).builder;
-    })) as any
-  ).forEach((v: any) => {
-    notTermTaxonomyIds.push(v.term_taxonomy_id);
-  });
-
-  const termTaxonomyId = (
-    (await queryUtil.terms((query) => {
-      query.where("term_taxonomy_id", notTermTaxonomyIds, "not in");
-    })) as any
-  )[0].term_taxonomy_id;
-
-  const countBefore = (
-    (await queryUtil.terms((query) => {
-      query.selectTermTaxonomy
-        .where("term_taxonomy_id", termTaxonomyId)
-        .builder.limit(1);
-    }, z.array(val.database.wpTermTaxonomy))) as any
-  )[0].count;
-
-  console.log(`countBefore:`, countBefore);
-
-  // Create a term and term taxonomy
-  let trx = await database.transaction;
   const current = context.components.get(Current);
+  let trx = await database.transaction;
+
+  await trx
+    .insert({ name: termName, slug: termName })
+    .into(current.tables.get("terms"))
+    .then((v) => {
+      termId = v[0];
+    });
 
   await trx
     .insert({
-      object_id: postId,
-      term_taxonomy_id: termTaxonomyId,
+      term_id: termId,
+      taxonomy: taxonomyName,
+      description: "test",
+      parent: 0,
+      count: 0,
     })
+    .into(current.tables.get("term_taxonomy"))
+    .then((v) => {
+      termTaxonomyId = v[0];
+    });
+
+  await trx
+    .insert({ object_id: postId, term_taxonomy_id: termTaxonomyId })
     .into(current.tables.get("term_relationships"));
 
-  trx.commit();
+  await trx.commit();
 
   await termTrx.updateCount([termTaxonomyId], taxonomy);
 
@@ -68,7 +63,9 @@ test("update post count", async () => {
     }, z.array(val.database.wpTermTaxonomy))) as any
   )[0].count;
 
+  // Clean up
   trx = await database.transaction;
+
   await trx
     .table(current.tables.get("term_relationships"))
     .where("term_taxonomy_id", termTaxonomyId)
@@ -77,14 +74,17 @@ test("update post count", async () => {
 
   await trx
     .table(current.tables.get("term_taxonomy"))
-    .update({
-      count: countBefore,
-    })
-    .where("term_taxonomy_id", termTaxonomyId);
+    .where("term_taxonomy_id", termTaxonomyId)
+    .del();
+
+  await trx
+    .table(current.tables.get("terms"))
+    .where("term_id", termId)
+    .del();
 
   await trx.commit();
 
-  expect(countBefore + 1).toEqual(countAfter);
+  expect(countAfter).toBe(1);
 });
 
 test("update attachment count", async () => {
@@ -138,7 +138,7 @@ test("update attachment count", async () => {
     })
     .into(current.tables.get("term_relationships"));
 
-  trx.commit();
+  await trx.commit();
 
   await termTrx.updateCount([termTaxonomyId], taxonomy);
 

@@ -3,6 +3,7 @@
   "exclude": ["src/init/templates"],
   "include": ["src/**/*"],
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
       "@rnaga/wp-node/*": ["../core/dist/*"]

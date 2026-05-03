@@ -144,6 +144,11 @@ export class PostTrx extends Trx {
       };
     }
 
+    // Mirror wp_insert_post: default post_author to current user when not provided.
+    if (!input.post_author) {
+      input.post_author = current.user?.props?.ID ?? 0;
+    }
+
     const parsedInput = val.trx.postUpsert.parse(input);
     const postDate = dateTimeUtil.get(input.post_date);
 

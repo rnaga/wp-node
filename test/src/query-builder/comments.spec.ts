@@ -1,8 +1,5 @@
 import Application from "@rnaga/wp-node/application";
-import {
-  CommentsQuery,
-  QueryBuilders,
-} from "@rnaga/wp-node/query-builder";
+import { CommentsQuery, QueryBuilders } from "@rnaga/wp-node/query-builder";
 
 test("with posts", async () => {
   const context = await Application.getContext("single");
@@ -51,7 +48,11 @@ test("with meta", async () => {
 
   const comments = builders.get(CommentsQuery, builder);
 
-  comments.from.withMeta();
+  comments.from
+    .withMeta()
+    .where("meta_key", "key")
+    .where("meta_value", "value")
+    .select(["ID", "meta_key", "meta_value"]);
 
   console.log(builder.toString());
 });

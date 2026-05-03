@@ -322,7 +322,13 @@ export class TermsQuery extends QueryBuilder<TermsQuery> {
     v: string | number | Array<string | number>,
     op: string = "="
   ) {
-    this.builder.where(this.getColumn(column), op, v);
+    const col = this.getColumn(column);
+
+    if (Array.isArray(v)) {
+      this.builder.whereIn(col, v);
+    } else {
+      this.builder.where(col, op, v);
+    }
     return this;
   }
 

@@ -42,10 +42,13 @@ export class CommonQuery<T extends TableNames> extends QueryBuilder<
     op: string = "="
   ) {
     const { column: toColumn } = this.alias;
+    const col = toColumn(this.table as T, column as types.Columns<T>);
+
     if (Array.isArray(value)) {
-      op = "in";
+      this.builder.whereIn(col, value);
+    } else {
+      this.builder.where(col, op, value);
     }
-    this.builder.where(toColumn<any>(this.table, column), op, value);
     return this;
   }
 

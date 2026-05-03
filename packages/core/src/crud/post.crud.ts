@@ -150,12 +150,15 @@ export class PostCrud extends Crud {
     const metas = await post.meta.props();
 
     // public meta is key without _ prefix
-    const publicMetas = Object.entries(metas).reduce((acc, [key, value]) => {
-      if (key[0] !== "_") {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, any>);
+    const publicMetas = Object.entries(metas).reduce(
+      (acc, [key, value]) => {
+        if (key[0] !== "_") {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     return {
       ...props,
@@ -343,7 +346,11 @@ export class PostCrud extends Crud {
     }
 
     if (data.ID && data.ID > 0) {
-      return await this.update(data.ID, val.trx.postUpsert.parse(data), options);
+      return await this.update(
+        data.ID,
+        val.trx.postUpsert.parse(data),
+        options
+      );
     }
 
     data.ID = undefined;
@@ -785,18 +792,18 @@ export class PostCrud extends Crud {
     const countGroupBy = (
       includeCountGroupBy
         ? await queryUtil.posts((query) => {
-          buildQuery(query);
-          query
-            .where("post_type", postTypes)
-            .countGroupby("posts", includeCountGroupBy);
-        }, val.query.resultCountGroupBy(includeCountGroupBy))
+            buildQuery(query);
+            query
+              .where("post_type", postTypes)
+              .countGroupby("posts", includeCountGroupBy);
+          }, val.query.resultCountGroupBy(includeCountGroupBy))
         : []
     ) as
       | Array<
-        {
-          [K in TCountGroupBy]: string;
-        } & { count: number }
-      >
+          {
+            [K in TCountGroupBy]: string;
+          } & { count: number }
+        >
       | undefined;
 
     const data = [];

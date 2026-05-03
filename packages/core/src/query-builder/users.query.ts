@@ -188,19 +188,16 @@ export class UsersQuery extends QueryBuilder<UsersQuery> {
     op: string = "="
   ) {
     const { column: toColumn } = this.alias;
+    const col =
+      column === "meta_key" || column === "meta_value"
+        ? toColumn("usermeta", column as types.Columns<"usermeta">)
+        : toColumn("users", column);
+
     if (Array.isArray(value)) {
-      op = "in";
+      this.builder.whereIn(col, value);
+    } else {
+      this.builder.where(col, op, value);
     }
-    this.builder.where(
-      toColumn(
-        (column == "meta_key" || column == "meta_value"
-          ? "usermeta"
-          : "users") as any,
-        column
-      ),
-      op,
-      value
-    );
     return this;
   }
 

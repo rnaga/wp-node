@@ -58,19 +58,16 @@ export class SiteQuery extends QueryBuilder<SiteQuery> {
     op: string = "="
   ) {
     const { column: toColumn } = this.alias;
+    const col =
+      column === "meta_key" || column === "meta_value" || column === "site_id"
+        ? toColumn("sitemeta", column as types.Columns<"sitemeta">)
+        : toColumn("site", column);
+
     if (Array.isArray(value)) {
-      op = "in";
+      this.builder.whereIn(col, value);
+    } else {
+      this.builder.where(col, op, value);
     }
-    this.builder.where(
-      toColumn(
-        (column == "meta_key" || column == "meta_value" || column == "site_id"
-          ? "sitemeta"
-          : "site") as any,
-        column
-      ),
-      op,
-      value
-    );
 
     return this;
   }
