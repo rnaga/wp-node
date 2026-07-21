@@ -138,7 +138,7 @@ Once the config is initialized, run the app using:
 
 ```sh
 mvn use 22
-npx ts-node ./index.ts
+npx tsx ./index.ts
 ```
 
 If everything is working correctly, you’ll see SQL output like:

@@ -38,5 +38,10 @@ test("update terms", async () => {
   // Fetch post and verify categories
   const updatedPost = (await postCrud.get(postId)).data;
   const updatedCategoryIds = updatedPost.categories.map((cat) => cat.term_id);
+
+  // Sort both arrays before comparison to avoid order issues
+  updatedCategoryIds.sort((a, b) => a - b);
+  categoryIds.sort((a, b) => a - b);
+
   expect(updatedCategoryIds).toEqual(categoryIds);
 });

@@ -1,5 +1,5 @@
 // To execute this script, run:
-// npx ts-node index.ts
+// npx tsx index.ts
 
 import "./_wp/settings";
 

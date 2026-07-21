@@ -1,4 +1,5 @@
 import Application from "@rnaga/wp-node/application";
+import "_wp/settings";
 
 export default async function Blog({
   params,

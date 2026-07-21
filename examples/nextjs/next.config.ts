@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     config.plugins.push(
       new IgnorePlugin({
-        resourceRegExp: /^oracledb|pg-query-stream$/,
+        // Only mysql2 is an actual dependency (packages/core/package.json) -
+        // ignore knex's other optional dialect drivers so webpack doesn't
+        // try to resolve them.
+        resourceRegExp:
+          /^(oracledb|pg-query-stream|pg|mysql|mariadb(\/callback)?|better-sqlite3|sqlite3|tedious)$/,
       }),
       new ProvidePlugin({
         React: "react",
